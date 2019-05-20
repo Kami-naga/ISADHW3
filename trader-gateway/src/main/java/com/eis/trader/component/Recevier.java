@@ -1,6 +1,7 @@
 package com.eis.trader.component;
 
 import com.eis.trader.domain.Instrument;
+import com.eis.trader.domain.OrderMain;
 import com.eis.trader.util.ProtostuffUtils;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class Recevier {
     @RabbitListener(queues = "trader")
     public void process(byte[] data) throws Exception {
-        Instrument instrument = ProtostuffUtils.deserialize(data, Instrument.class);
-        System.out.println("接收到" + instrument.toString());
+        OrderMain orderMain = ProtostuffUtils.deserialize(data, OrderMain.class);
+        System.out.println("接收到" + orderMain.toString());
     }
 }

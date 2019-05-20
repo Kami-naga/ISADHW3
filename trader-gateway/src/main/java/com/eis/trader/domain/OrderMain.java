@@ -12,7 +12,7 @@ import java.io.Serializable;
  */
 @Entity
 @Data
-public class Order implements Serializable {
+public class OrderMain implements Serializable {
 
     private static final Long serialVersionUID = 1L;
 
@@ -33,4 +33,8 @@ public class Order implements Serializable {
     private OrderSide orderSide;
 
     private OrderType orderType;
+
+    public Long getOrderId() {
+        return orderId;
+    }
 }

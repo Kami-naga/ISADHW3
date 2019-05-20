@@ -23,4 +23,7 @@ public class Product implements Serializable {
 
     @OneToMany(cascade = CascadeType.MERGE, mappedBy = "product")
     private Set<Instrument> instruments;
+
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "product")
+    private Set<OrderMain> orders;
 }

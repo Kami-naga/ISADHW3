@@ -1,8 +1,9 @@
 package com.eis.trader.controller;
 
 import com.eis.trader.domain.Instrument;
-import com.eis.trader.domain.Order;
+import com.eis.trader.domain.OrderMain;
 import com.eis.trader.util.ProtostuffUtils;
+import com.eis.trader.util.RedisUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -22,6 +23,9 @@ public class TradeController {
     @Autowired
     RabbitTemplate rabbitTemplate;
 
+    @Autowired
+    RedisUtils redisUtils;
+
     @PostMapping("/test")
     public void convert(@RequestBody Instrument instrument, HttpServletRequest request) {
         byte[] data = ProtostuffUtils.serialize(instrument);
@@ -31,9 +35,10 @@ public class TradeController {
 
     @PostMapping("/makeOrder")
     @ResponseBody
-    public String makeOrder(@RequestBody Order order, HttpServletRequest request) {
-        byte[] data = ProtostuffUtils.serialize(order);
-        logger.info("Sending Order...");
+    public String makeOrder(@RequestBody OrderMain orderMain, HttpServletRequest request) {
+        byte[] data = ProtostuffUtils.serialize(orderMain);
+        redisUtils.set(orderMain.getOrderId().toString(), orderMain);
+        logger.info("Sending OrderMain...");
         rabbitTemplate.convertAndSend(topicExchangeName, "trader", data);
         return "success";
     }

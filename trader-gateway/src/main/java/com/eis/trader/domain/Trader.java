@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Created by kaclarpt on 2019/5/20
@@ -24,4 +25,6 @@ public class Trader implements Serializable {
 
     private Boolean other_see;
 
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "trader")
+    private Set<OrderMain> orders;
 }
