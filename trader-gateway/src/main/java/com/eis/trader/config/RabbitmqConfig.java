@@ -23,13 +23,13 @@ import org.springframework.core.env.Environment;
 @Configuration
 public class RabbitmqConfig {
 
-    static final String topicExchangeName = "order-process";
+    static final String topicExchangeName = "exchange";
 
-    static final String queueName = "spring-boot";
+    static final String queueName = "trader";
 
     @Bean
     Queue queue() {
-        return new Queue(queueName, false);
+        return new Queue(queueName);
     }
 
     @Bean
@@ -39,7 +39,7 @@ public class RabbitmqConfig {
 
     @Bean
     Binding binding(Queue queue, TopicExchange topicExchange) {
-        return BindingBuilder.bind(queue).to(topicExchange).with("test");
+        return BindingBuilder.bind(queue).to(topicExchange).with(queueName);
     }
 
 //    @Bean
