@@ -1,13 +1,17 @@
 package com.eis.hw.Model.Entity;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
 public class Instrument {
     private int instrumentId;
+    private Integer productId;
+    private Integer brokerId;
     private String period;
-    private Broker brokerByBrokerId;
 
     @Id
     @Column(name = "instrument_id")
@@ -17,6 +21,26 @@ public class Instrument {
 
     public void setInstrumentId(int instrumentId) {
         this.instrumentId = instrumentId;
+    }
+
+    @Basic
+    @Column(name = "product_id")
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Integer productId) {
+        this.productId = productId;
+    }
+
+    @Basic
+    @Column(name = "broker_id")
+    public Integer getBrokerId() {
+        return brokerId;
+    }
+
+    public void setBrokerId(Integer brokerId) {
+        this.brokerId = brokerId;
     }
 
     @Basic
@@ -35,22 +59,14 @@ public class Instrument {
         if (o == null || getClass() != o.getClass()) return false;
         Instrument that = (Instrument) o;
         return instrumentId == that.instrumentId &&
+                Objects.equals(productId, that.productId) &&
+                Objects.equals(brokerId, that.brokerId) &&
                 Objects.equals(period, that.period);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(instrumentId, period);
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "broker_id", referencedColumnName = "broker_id")
-    public Broker getBrokerByBrokerId() {
-        return brokerByBrokerId;
-    }
-
-    public void setBrokerByBrokerId(Broker brokerByBrokerId) {
-        this.brokerByBrokerId = brokerByBrokerId;
+        return Objects.hash(instrumentId, productId, brokerId, period);
     }
 }

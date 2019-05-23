@@ -6,16 +6,16 @@ import java.util.Objects;
 @Entity
 public class Trade {
     private int tradeId;
-    private String period;
-    private Integer price;
+    private Integer instrumentId;
+    private Double price;
     private Integer qty;
-    private Byte initiatorSide;
-    private Byte completionSide;
-    private Broker brokerByBrokerId;
-    private Product productByProductId;
+    private Integer initiatorId;
+    private String initiatorBuy;
+    private Integer completionId;
 
     @Id
     @Column(name = "trade_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getTradeId() {
         return tradeId;
     }
@@ -25,22 +25,22 @@ public class Trade {
     }
 
     @Basic
-    @Column(name = "period")
-    public String getPeriod() {
-        return period;
+    @Column(name = "instrument_id")
+    public Integer getInstrumentId() {
+        return instrumentId;
     }
 
-    public void setPeriod(String period) {
-        this.period = period;
+    public void setInstrumentId(Integer instrumentId) {
+        this.instrumentId = instrumentId;
     }
 
     @Basic
     @Column(name = "price")
-    public Integer getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(Integer price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
@@ -55,23 +55,33 @@ public class Trade {
     }
 
     @Basic
-    @Column(name = "initiator_side")
-    public Byte getInitiatorSide() {
-        return initiatorSide;
+    @Column(name = "initiator_id")
+    public Integer getInitiatorId() {
+        return initiatorId;
     }
 
-    public void setInitiatorSide(Byte initiatorSide) {
-        this.initiatorSide = initiatorSide;
+    public void setInitiatorId(Integer initiatorId) {
+        this.initiatorId = initiatorId;
     }
 
     @Basic
-    @Column(name = "completion_side")
-    public Byte getCompletionSide() {
-        return completionSide;
+    @Column(name = "initiator_buy")
+    public String getInitiatorBuy() {
+        return initiatorBuy;
     }
 
-    public void setCompletionSide(Byte completionSide) {
-        this.completionSide = completionSide;
+    public void setInitiatorBuy(String initiatorBuy) {
+        this.initiatorBuy = initiatorBuy;
+    }
+
+    @Basic
+    @Column(name = "completion_id")
+    public Integer getCompletionId() {
+        return completionId;
+    }
+
+    public void setCompletionId(Integer completionId) {
+        this.completionId = completionId;
     }
 
     @Override
@@ -80,36 +90,17 @@ public class Trade {
         if (o == null || getClass() != o.getClass()) return false;
         Trade trade = (Trade) o;
         return tradeId == trade.tradeId &&
-                Objects.equals(period, trade.period) &&
+                Objects.equals(instrumentId, trade.instrumentId) &&
                 Objects.equals(price, trade.price) &&
                 Objects.equals(qty, trade.qty) &&
-                Objects.equals(initiatorSide, trade.initiatorSide) &&
-                Objects.equals(completionSide, trade.completionSide);
+                Objects.equals(initiatorId, trade.initiatorId) &&
+                Objects.equals(initiatorBuy, trade.initiatorBuy) &&
+                Objects.equals(completionId, trade.completionId);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(tradeId, period, price, qty, initiatorSide, completionSide);
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "broker_id", referencedColumnName = "broker_id")
-    public Broker getBrokerByBrokerId() {
-        return brokerByBrokerId;
-    }
-
-    public void setBrokerByBrokerId(Broker brokerByBrokerId) {
-        this.brokerByBrokerId = brokerByBrokerId;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "product_id", referencedColumnName = "product_id")
-    public Product getProductByProductId() {
-        return productByProductId;
-    }
-
-    public void setProductByProductId(Product productByProductId) {
-        this.productByProductId = productByProductId;
+        return Objects.hash(tradeId, instrumentId, price, qty, initiatorId, initiatorBuy, completionId);
     }
 }

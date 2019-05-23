@@ -1,6 +1,11 @@
 package com.eis.hw.Controller;
 
+import com.eis.hw.Model.Entity.Orderbook;
+import com.eis.hw.Model.RedisEntity.ROrderbook;
+import com.eis.hw.Service.ROrderbookService;
 import com.eis.hw.Util.RedisPool;
+import com.eis.hw.Util.SerializeUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -10,6 +15,16 @@ import java.util.*;
 
 @Controller
 public class JedisController {
+    @Autowired
+    ROrderbookService rOrderbookService;
+
+    @GetMapping(value = "/ob")
+    @ResponseBody
+    public void ob(){
+        ROrderbook rOrderbook = new ROrderbook();
+        rOrderbook.test();
+        rOrderbookService.save("ob2",rOrderbook);
+    }
 
     @GetMapping(value="/Redis/String")
     @ResponseBody

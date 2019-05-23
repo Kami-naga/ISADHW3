@@ -22,6 +22,7 @@
         <mapping class="com.eis.hw.Model.Entity.Product"/>
         <mapping class="com.eis.hw.Model.Entity.Trade"/>
         <mapping class="com.eis.hw.Model.Entity.Trader"/>
+        <mapping class="com.eis.hw.Model.Entity.Orderitem"/>
 
     </session-factory>
 </hibernate-configuration>
