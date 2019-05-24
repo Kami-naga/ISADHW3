@@ -9,6 +9,7 @@ public class Orderitem {
     private Integer brokerId;
     private Integer traderId;
     private Integer vol;
+    private String nodeId;
 
     @Id
     @Column(name = "order_id")
@@ -51,6 +52,16 @@ public class Orderitem {
         this.vol = vol;
     }
 
+    @Basic
+    @Column(name = "node_id")
+    public String getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,12 +70,13 @@ public class Orderitem {
         return orderId == orderitem.orderId &&
                 Objects.equals(brokerId, orderitem.brokerId) &&
                 Objects.equals(traderId, orderitem.traderId) &&
-                Objects.equals(vol, orderitem.vol);
+                Objects.equals(vol, orderitem.vol) &&
+                Objects.equals(nodeId, orderitem.nodeId);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(orderId, brokerId, traderId, vol);
+        return Objects.hash(orderId, brokerId, traderId, vol, nodeId);
     }
 }

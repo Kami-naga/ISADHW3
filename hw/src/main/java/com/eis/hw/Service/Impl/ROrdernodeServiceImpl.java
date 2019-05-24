@@ -2,6 +2,7 @@ package com.eis.hw.Service.Impl;
 
 import com.eis.hw.DAO.OrderitemRepository;
 import com.eis.hw.Model.Entity.Orderitem;
+import com.eis.hw.Model.RedisEntity.ROrderbook;
 import com.eis.hw.Model.RedisEntity.ROrdernode;
 import com.eis.hw.Service.ROrdernodeService;
 import com.eis.hw.Service.TradeService;
@@ -105,8 +106,39 @@ public class ROrdernodeServiceImpl implements ROrdernodeService {
     }
 
     @Override
+    public String sProduce(String bookId, int price, int vol, int orderitemid) {
+        ROrdernode rOrdernode = new ROrdernode();
+        rOrdernode.setVol(vol);
+        rOrdernode.setPrice(price);
+        rOrdernode.addOrderitem(orderitemid);
+        String nodeId = bookId + "P" + String.valueOf(price)+"S";
+        save(nodeId,rOrdernode);
+        return nodeId;
+    }
+
+    @Override
     public void save(String s, ROrdernode rOrdernode) {
         RedisPool.getJedis().set(s.getBytes(), SerializeUtil.serialize(rOrdernode));
+    }
+
+    @Override
+    public int delOrder(String nodeId,Integer orderId) {
+        ROrdernode rOrdernode = get(nodeId);
+        List<Integer> orders = rOrdernode.getOrders();
+        for(int i=0;i<orders.size();i++){
+
+            //exist
+            if(String.valueOf(orders.get(i)).equals(String.valueOf(orderId))){
+                int res = orderitemRepository.findById(orderId).get().getVol();
+                orderitemRepository.deleteById(orderId);
+                orders.remove(i);
+                rOrdernode.setOrders(orders);
+                save(nodeId,rOrdernode);
+
+                return res;
+            }
+        }
+        return 0;
     }
 
     @Override

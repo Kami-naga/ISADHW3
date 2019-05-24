@@ -18,13 +18,6 @@ public class JedisController {
     @Autowired
     ROrderbookService rOrderbookService;
 
-    @GetMapping(value = "/ob")
-    @ResponseBody
-    public void ob(){
-        ROrderbook rOrderbook = new ROrderbook();
-        rOrderbook.test();
-        rOrderbookService.save("ob2",rOrderbook);
-    }
 
     @GetMapping(value="/Redis/String")
     @ResponseBody

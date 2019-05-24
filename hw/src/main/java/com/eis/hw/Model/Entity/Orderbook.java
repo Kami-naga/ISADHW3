@@ -12,6 +12,8 @@ import java.util.List;
 public class Orderbook implements Serializable {
     private List<Ordernode> sells = new ArrayList<>();
     private List<Ordernode> buys = new ArrayList<>();
+    private List<Ordernode> stopSells = new ArrayList<>();
+    private List<Ordernode> stopBuys = new ArrayList<>();
 
     public void buyAdd(Ordernode o){
         buys.add(o);
@@ -21,6 +23,10 @@ public class Orderbook implements Serializable {
         sells.add(o);
     }
 
+    public void sBuyAdd(Ordernode o){ stopBuys.add(o);}
+
+    public void sSellAdd(Ordernode o){ stopSells.add(o);}
+
     public List<Ordernode> getSells() {
         return sells;
     }
@@ -29,9 +35,19 @@ public class Orderbook implements Serializable {
         return buys;
     }
 
+    public List<Ordernode> getStopBuys() {
+        return stopBuys;
+    }
+
+    public List<Ordernode> getStopSells() {
+        return stopSells;
+    }
+
     public void sort(){
         Collections.sort(buys,buyComparator);
         Collections.sort(sells,sellComparator);
+        Collections.sort(stopSells,buyComparator);
+        Collections.sort(stopBuys,sellComparator);
     }
 
     public static Comparator<Ordernode> sellComparator = new Comparator<Ordernode>() {
