@@ -2,14 +2,15 @@ package com.eis.hw.Model.RedisEntity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ROrderbook implements Serializable{
-    private List<String> buys = new ArrayList<>();
-    private List<String> sells = new ArrayList<>();
+    private List<String> buys = new LinkedList<>();
+    private List<String> sells = new LinkedList<>();
 
-    private List<String> stopBuys = new ArrayList<>();
-    private List<String> stopSells = new ArrayList<>();
+    private List<String> stopBuys = new LinkedList<>();
+    private List<String> stopSells = new LinkedList<>();
 
     public List<String> getStopBuys() {
         return stopBuys;
