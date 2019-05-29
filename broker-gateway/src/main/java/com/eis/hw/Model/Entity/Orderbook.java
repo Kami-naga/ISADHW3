@@ -3,17 +3,14 @@ package com.eis.hw.Model.Entity;
 import com.eis.hw.Model.RedisEntity.ROrderbook;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 
 public class Orderbook implements Serializable {
-    private List<Ordernode> sells = new ArrayList<>();
-    private List<Ordernode> buys = new ArrayList<>();
-    private List<Ordernode> stopSells = new ArrayList<>();
-    private List<Ordernode> stopBuys = new ArrayList<>();
+    private List<Ordernode> sells = new LinkedList<>();
+    private List<Ordernode> buys = new LinkedList<>();
+    private List<Ordernode> stopSells = new LinkedList<>();
+    private List<Ordernode> stopBuys = new LinkedList<>();
 
     public void buyAdd(Ordernode o){
         buys.add(o);
