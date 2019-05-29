@@ -25,10 +25,11 @@ public class OrderController {
     @Autowired
     OrderitemRepository orderitemRepository;
 
-    @GetMapping(value="show")
+    @PostMapping(value="showDetail")
     @ResponseBody
-    public Orderbook show(){
-        ROrderbook rOrderbook = rOrderbookService.get("B1I1");
+    public Orderbook showDetail(int broker_id,int instrument_id){
+        String bookId = "B"+String.valueOf(broker_id)+"I"+String.valueOf(instrument_id);
+        ROrderbook rOrderbook = rOrderbookService.get(bookId);
         Orderbook orderbook = orderbookService.construct(rOrderbook);
         //orderbookService.showOrderbook(orderbook);
         return orderbook;
@@ -45,7 +46,6 @@ public class OrderController {
     @PostMapping(value="cancel")
     @ResponseBody
     public void getCancelOrder(Integer orderId){
-        int broker_id = 1;
 
         int remain = rOrderbookService.cancel(orderId);
         System.out.println("remain "+remain);
@@ -54,9 +54,7 @@ public class OrderController {
 
     @PostMapping(value = "stop")
     @ResponseBody
-    public void getStopOrder(int trader_id,int stopPrice,int qty,String side){
-        int broker_id = 1;
-        int instrument_id = 1;
+    public void getStopOrder(int trader_id,int stopPrice,int qty,String side,int broker_id,int instrument_id){
 
         //load orderbook
         String bookId = "B"+String.valueOf(broker_id)+"I"+String.valueOf(instrument_id);
@@ -82,9 +80,7 @@ public class OrderController {
 
     @PostMapping(value="market")
     @ResponseBody
-    public void getMarketOrder(int trader_id,int qty,String side){
-        int broker_id = 1;
-        int instrument_id = 1;
+    public void getMarketOrder(int trader_id,int qty,String side,int broker_id,int instrument_id){
 
         //load orderbook
         String bookId = "B"+String.valueOf(broker_id)+"I"+String.valueOf(instrument_id);
@@ -96,11 +92,7 @@ public class OrderController {
 
     @PostMapping(value = "limit")
     @ResponseBody
-    public void getLimitOrder(int trader_id,int price,int qty,String side){
-
-        //get args
-        int broker_id = 1;
-        int instrument_id = 1;
+    public void getLimitOrder(int trader_id,int price,int qty,String side,int broker_id,int instrument_id){ ;
 
         //load orderbook
         String bookId = "B"+String.valueOf(broker_id)+"I"+String.valueOf(instrument_id);
