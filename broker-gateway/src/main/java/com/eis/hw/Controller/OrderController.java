@@ -9,6 +9,7 @@ import com.eis.hw.Service.ROrderbookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Scanner;
@@ -26,10 +27,11 @@ public class OrderController {
 
     @GetMapping(value="show")
     @ResponseBody
-    public void show(){
+    public Orderbook show(){
         ROrderbook rOrderbook = rOrderbookService.get("B1I1");
         Orderbook orderbook = orderbookService.construct(rOrderbook);
-        orderbookService.showOrderbook(orderbook);
+        //orderbookService.showOrderbook(orderbook);
+        return orderbook;
     }
 
     @GetMapping(value = "init")
@@ -40,51 +42,21 @@ public class OrderController {
         rOrderbookService.save("B1I1",rob);
     }
 
-    @GetMapping(value="cancel")
+    @PostMapping(value="cancel")
     @ResponseBody
-    public void getCancelOrder(){
+    public void getCancelOrder(Integer orderId){
         int broker_id = 1;
-        Integer orderId = 0;
-        Scanner scanner = new Scanner(System.in);
-        String read = "";
-
-        System.out.println("order id");
-        read = scanner.nextLine();
-        orderId = Integer.valueOf(read);
 
         int remain = rOrderbookService.cancel(orderId);
         System.out.println("remain "+remain);
 
     }
 
-    @GetMapping(value = "stop")
+    @PostMapping(value = "stop")
     @ResponseBody
-    public void getStopOrder(){
+    public void getStopOrder(int trader_id,int stopPrice,int qty,String side){
         int broker_id = 1;
-        int trader_id = 1;
         int instrument_id = 1;
-        int stopPrice = 1544;
-        int qty = 50;
-        String side = "buy";
-
-        Scanner scanner = new Scanner(System.in);
-        String read = "";
-
-        System.out.println("trader id");
-        read = scanner.nextLine();
-        trader_id = Integer.valueOf(read);
-
-        System.out.println("stopPrice");
-        read = scanner.nextLine();
-        stopPrice = Integer.valueOf(read);
-
-        System.out.println("qty");
-        read = scanner.nextLine();
-        qty = Integer.valueOf(read);
-
-        System.out.println("side");
-        read = scanner.nextLine();
-        side = read;
 
         //load orderbook
         String bookId = "B"+String.valueOf(broker_id)+"I"+String.valueOf(instrument_id);
@@ -108,29 +80,11 @@ public class OrderController {
 
     }
 
-    @GetMapping(value="market")
+    @PostMapping(value="market")
     @ResponseBody
-    public void getMarketOrder(){
+    public void getMarketOrder(int trader_id,int qty,String side){
         int broker_id = 1;
-        int trader_id = 1;
         int instrument_id = 1;
-        int qty = 50;
-        String side = "buy";
-
-        Scanner scanner = new Scanner(System.in);
-        String read = "";
-
-        System.out.println("trader id");
-        read = scanner.nextLine();
-        trader_id = Integer.valueOf(read);
-
-        System.out.println("qty");
-        read = scanner.nextLine();
-        qty = Integer.valueOf(read);
-
-        System.out.println("side");
-        read = scanner.nextLine();
-        side = read;
 
         //load orderbook
         String bookId = "B"+String.valueOf(broker_id)+"I"+String.valueOf(instrument_id);
@@ -140,37 +94,13 @@ public class OrderController {
         rOrderbookService.checkStop(bookId);
     }
 
-    @GetMapping(value = "limit")
+    @PostMapping(value = "limit")
     @ResponseBody
-    public void getLimitOrder(){
+    public void getLimitOrder(int trader_id,int price,int qty,String side){
 
         //get args
         int broker_id = 1;
-        int trader_id = 1;
         int instrument_id = 1;
-        int qty = 50;
-        int price = 1244;
-        String side = "buy";
-
-        Scanner scanner = new Scanner(System.in);
-        String read = "";
-
-        System.out.println("trader id");
-        read = scanner.nextLine();
-        trader_id = Integer.valueOf(read);
-
-        System.out.println("price");
-        read = scanner.nextLine();
-        price = Integer.valueOf(read);
-
-        System.out.println("qty");
-        read = scanner.nextLine();
-        qty = Integer.valueOf(read);
-
-        System.out.println("side");
-        read = scanner.nextLine();
-        side = read;
-
 
         //load orderbook
         String bookId = "B"+String.valueOf(broker_id)+"I"+String.valueOf(instrument_id);
