@@ -406,6 +406,8 @@ public class ROrderbookServiceImpl implements ROrderbookService {
                 ROrdernode snode = rOrdernodeService.get(snodeId);
                 int sPrice = snode.getPrice();
                 if (price < sPrice) {
+                    rOrderbook.setSells(sells);
+                    save(bookId, rOrderbook);
                     return consume;
                 }
                 int sVol = snode.getVol();
@@ -453,6 +455,8 @@ public class ROrderbookServiceImpl implements ROrderbookService {
                 ROrdernode bnode = rOrdernodeService.get(bnodeId);
                 int bPrice = bnode.getPrice();
                 if (price > bPrice) {
+                    rOrderbook.setBuys(buys);
+                    save(bookId, rOrderbook);
                     return consume;
                 }
                 int bVol = bnode.getVol();
