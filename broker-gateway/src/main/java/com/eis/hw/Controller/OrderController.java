@@ -31,7 +31,7 @@ public class OrderController {
         String bookId = "B"+String.valueOf(broker_id)+"I"+String.valueOf(instrument_id);
         ROrderbook rOrderbook = rOrderbookService.get(bookId);
         Orderbook orderbook = orderbookService.construct(rOrderbook);
-        //orderbookService.showOrderbook(orderbook);
+        orderbookService.showOrderbook(orderbook);
         return orderbook;
     }
 
@@ -61,6 +61,7 @@ public class OrderController {
 
         //check and consume order
         if(rOrderbookService.consumeStop(bookId,side,stopPrice,qty,trader_id)){
+            rOrderbookService.checkStop(bookId);
             return;
         }
 
@@ -104,6 +105,7 @@ public class OrderController {
         //if rest
         int rest = qty-consume;
         if(rest ==0){
+            rOrderbookService.checkStop(bookId);
             return;
         }
         Orderitem orderitem = new Orderitem();

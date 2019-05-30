@@ -342,7 +342,8 @@ export default {
           method:'post',
           url:'http://localhost:8083/cancel',
           data:{
-            orderId:this.orderId
+            orderId:this.orderId,
+            trader_id:this.trader_id
           },
           transformRequest:function(obj) {
     　　　　var str = [];
@@ -832,7 +833,6 @@ export default {
 　　　　return str.join("&");
 　　　}
     }).then((response)=>{
-
       var tmp = response.data
       this.construct(tmp)
 
