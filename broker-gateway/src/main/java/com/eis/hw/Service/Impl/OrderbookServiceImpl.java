@@ -9,6 +9,7 @@ import com.eis.hw.Service.OrderbookService;
 import com.eis.hw.Service.OrdernodeService;
 import com.eis.hw.Service.ROrderbookService;
 import com.eis.hw.Service.ROrdernodeService;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +17,20 @@ import java.util.List;
 
 @Service
 public class OrderbookServiceImpl implements OrderbookService {
-    @Autowired
-    private ROrdernodeService rOrdernodeService;
+    private final ROrdernodeService rOrdernodeService;
+
+    private final OrdernodeService ordernodeService;
+
+    private final RabbitTemplate rabbitTemplate;
+
+    private final String topicExchangeName="exchange";
 
     @Autowired
-    private OrdernodeService ordernodeService;
+    public OrderbookServiceImpl(ROrdernodeService rOrdernodeService, OrdernodeService ordernodeService, RabbitTemplate rabbitTemplate) {
+        this.rOrdernodeService = rOrdernodeService;
+        this.ordernodeService = ordernodeService;
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
     @Override
     public Orderbook construct(ROrderbook rOrderbook) {
@@ -108,6 +118,12 @@ public class OrderbookServiceImpl implements OrderbookService {
             }
             System.out.println("------------------------------------------------------");
         }
+    }
+
+    @Override
+    public boolean transferOrder(byte[] data) {
+        rabbitTemplate.convertAndSend(topicExchangeName, "broker", data);
+        return true;
     }
 
 

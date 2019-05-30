@@ -30,6 +30,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean transferOrder(byte[] data) {
         rabbitTemplate.convertAndSend(topicExchangeName, "trader", data);
-        return false;
+        return true;
     }
 }

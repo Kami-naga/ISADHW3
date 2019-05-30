@@ -25,7 +25,7 @@ public class RabbitmqConfig {
 
     static final String topicExchangeName = "exchange";
 
-    static final String queueName = "trader";
+    static final String queueName = "broker";
 
     @Bean
     Queue queue() {
