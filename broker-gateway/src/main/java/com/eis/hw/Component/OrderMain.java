@@ -1,14 +1,16 @@
-package com.eis.trader.domain;
+package com.eis.hw.Component;
 
-import com.eis.trader.enums.OrderSide;
-import com.eis.trader.enums.OrderType;
+import com.eis.hw.Enums.OrderSide;
+import com.eis.hw.Enums.OrderType;
+import com.eis.hw.Model.Entity.Product;
+import com.eis.hw.Model.Entity.Trader;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
 /**
- * Created by kaclarpt on 2019/5/20
+ * Created by kaclarpt on 2019/5/29
  */
 @Entity
 @Data

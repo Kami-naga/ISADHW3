@@ -1,16 +1,15 @@
-package com.eis.trader.component;
+package com.eis.hw.Component;
 
-import com.eis.trader.domain.Instrument;
-import com.eis.trader.domain.OrderMain;
-import com.eis.trader.util.ProtostuffUtils;
+
+import com.eis.hw.Util.ProtostuffUtils;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by kaclarpt on 2019/5/20
+ * Created by kaclarpt on 2019/5/29
  */
 @Component
-public class Recevier {
+public class OrderReceiver {
     @RabbitListener(queues = "trader")
     public void process(byte[] data) throws Exception {
         OrderMain orderMain = ProtostuffUtils.deserialize(data, OrderMain.class);

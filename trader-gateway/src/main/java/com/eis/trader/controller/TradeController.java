@@ -1,9 +1,10 @@
 package com.eis.trader.controller;
 
-import com.eis.trader.domain.Instrument;
-import com.eis.trader.domain.OrderMain;
+import com.eis.trader.form.InstrumentForm;
+import com.eis.trader.service.OrderService;
 import com.eis.trader.util.ProtostuffUtils;
 import com.eis.trader.util.RedisUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -14,32 +15,22 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/orders")
+@Slf4j
 public class TradeController {
 
-    private static final String topicExchangeName="exchange";
-
-    private static final Logger logger = LoggerFactory.getLogger(TradeController.class);
+    private final OrderService orderService;
 
     @Autowired
-    RabbitTemplate rabbitTemplate;
-
-    @Autowired
-    RedisUtils redisUtils;
-
-    @PostMapping("/test")
-    public void convert(@RequestBody Instrument instrument, HttpServletRequest request) {
-        byte[] data = ProtostuffUtils.serialize(instrument);
-        logger.info("Sending message...");
-        rabbitTemplate.convertAndSend(topicExchangeName, "trader", data);
+    public TradeController(OrderService orderService) {
+        this.orderService = orderService;
     }
 
     @PostMapping("/makeOrder")
     @ResponseBody
-    public String makeOrder(@RequestBody OrderMain orderMain, HttpServletRequest request) {
-        byte[] data = ProtostuffUtils.serialize(orderMain);
-        redisUtils.set(orderMain.getOrderId().toString(), orderMain);
-        logger.info("Sending OrderMain...");
-        rabbitTemplate.convertAndSend(topicExchangeName, "trader", data);
+    public String makeOrder(@RequestBody InstrumentForm instrumentForm, HttpServletRequest request) {
+        byte[] data = ProtostuffUtils.serialize(instrumentForm);
+        log.info("Sending OrderMain...");
+        orderService.transferOrder(data);
         return "success";
     }
 }
