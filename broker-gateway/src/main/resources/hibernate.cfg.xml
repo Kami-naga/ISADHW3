@@ -17,12 +17,12 @@
         <property name="show_sql">true</property>
         <!-- Drop and re-create the database schema on startup -->
         <property name="hbm2ddl.auto">update</property>
-        <mapping class="com.eis.hw.Model.Entity.Broker"/>
-        <mapping class="com.eis.hw.Model.Entity.Instrument"/>
-        <mapping class="com.eis.hw.Model.Entity.Product"/>
-        <mapping class="com.eis.hw.Model.Entity.Trade"/>
-        <mapping class="com.eis.hw.Model.Entity.Trader"/>
-        <mapping class="com.eis.hw.Model.Entity.Orderitem"/>
+        <mapping class="com.eis.hw.model.entity.Broker"/>
+        <mapping class="com.eis.hw.model.entity.Instrument"/>
+        <mapping class="com.eis.hw.model.entity.Product"/>
+        <mapping class="com.eis.hw.model.entity.Trade"/>
+        <mapping class="com.eis.hw.model.entity.Trader"/>
+        <mapping class="com.eis.hw.model.entity.Orderitem"/>
 
     </session-factory>
 </hibernate-configuration>

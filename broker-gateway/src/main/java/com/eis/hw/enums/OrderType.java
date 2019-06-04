@@ -1,9 +1,9 @@
-package com.eis.trader.enums;
+package com.eis.hw.enums;
 
 import lombok.Getter;
 
 /**
- * Created by kaclarpt on 2019/5/20
+ * Created by kaclarpt on 2019/5/29
  */
 @Getter
 public enum OrderType {

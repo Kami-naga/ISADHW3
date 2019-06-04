@@ -1,7 +1,7 @@
-package com.eis.trader.form;
+package com.eis.hw.form;
 
-import com.eis.trader.enums.OrderSide;
-import com.eis.trader.enums.OrderType;
+import com.eis.hw.enums.OrderSide;
+import com.eis.hw.enums.OrderType;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 
 @Data
 public class InstrumentForm {
-    private Long bookId;
+    private String bookId;
 
     private Long traderId;
 

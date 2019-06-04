@@ -22,7 +22,7 @@ public class SendMessageController {
     public void process() {
         String message = "now " + new Date();
         InstrumentForm instrumentForm = new InstrumentForm();
-        instrumentForm.setQuantity(100);
+        instrumentForm.setQty(100);
         streamClient.output().send(MessageBuilder.withPayload(instrumentForm).build());
     }
 }

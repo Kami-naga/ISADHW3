@@ -1,5 +1,6 @@
 package com.eis.trader.service.impl;
 
+import com.eis.trader.entity.Orderbook;
 import com.eis.trader.service.OrderService;
 import com.eis.trader.util.ProtostuffUtils;
 import com.eis.trader.util.RedisUtils;
@@ -15,8 +16,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class OrderServiceImpl implements OrderService {
-    private static final String topicExchangeName="exchange";
-
     private final RabbitTemplate rabbitTemplate;
 
     private final RedisUtils redisUtils;
@@ -29,7 +28,15 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public boolean transferOrder(byte[] data) {
-        rabbitTemplate.convertAndSend(topicExchangeName, "trader", data);
+        String topicExchangeName = "exchange";
+        String sendQueueName = "trader";
+        rabbitTemplate.convertAndSend(topicExchangeName, sendQueueName, data);
         return true;
+    }
+
+    @Override
+    public Orderbook getOrderBook() {
+        String receiveQueueName = "orderBook";
+        return (Orderbook) rabbitTemplate.receiveAndConvert(receiveQueueName);
     }
 }
