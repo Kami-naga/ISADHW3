@@ -1,57 +1,32 @@
 package com.eis.hw.model.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import lombok.Data;
+import lombok.ToString;
+import org.hibernate.annotations.Fetch;
+
+import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
+@Data
 public class Instrument {
-    private Long instrumentId;
-    private Long productId;
-    private Long brokerId;
-    private String period;
-
     @Id
-    @Column(name = "instrument_id")
-    public Long getInstrumentId() {
-        return instrumentId;
-    }
+    @GeneratedValue
+    private Long instrumentId;
 
-    public void setInstrumentId(Long instrumentId) {
-        this.instrumentId = instrumentId;
-    }
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @JoinColumn(name="productId")
+    private Product product;
 
-    @Basic
-    @Column(name = "product_id")
-    public Long getProductId() {
-        return productId;
-    }
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+    @JoinColumn(name="brokerId")
+    private Broker broker;
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
-    }
+    @OneToMany
+    private List<Trade> trades;
 
-    @Basic
-    @Column(name = "broker_id")
-    public Long getBrokerId() {
-        return brokerId;
-    }
-
-    public void setBrokerId(Long brokerId) {
-        this.brokerId = brokerId;
-    }
-
-    @Basic
-    @Column(name = "period")
-    public String getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(String period) {
-        this.period = period;
-    }
+    private String period;
 
     @Override
     public boolean equals(Object o) {
@@ -59,14 +34,13 @@ public class Instrument {
         if (o == null || getClass() != o.getClass()) return false;
         Instrument that = (Instrument) o;
         return instrumentId == that.instrumentId &&
-                Objects.equals(productId, that.productId) &&
-                Objects.equals(brokerId, that.brokerId) &&
+                Objects.equals(this.getProduct().getProductId(), that.getProduct().getProductId()) &&
+                Objects.equals(this.getBroker().getBrokerId(), that.getBroker().getBrokerId()) &&
                 Objects.equals(period, that.period);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(instrumentId, productId, brokerId, period);
+        return Objects.hash(instrumentId, this.getProduct().getProductId(), this.getBroker().getBrokerId(), period);
     }
 }

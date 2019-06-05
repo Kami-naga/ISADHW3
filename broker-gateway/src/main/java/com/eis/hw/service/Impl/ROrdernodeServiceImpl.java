@@ -40,7 +40,7 @@ public class ROrdernodeServiceImpl implements ROrdernodeService {
             Long orderId = orders.get(0);
             Orderitem orderitem = orderitemRepository.findById(orderId).get();
             int orderVol = orderitem.getVol();
-            Long compleId = orderitem.getTraderId();
+            Long compleId = orderitem.getTrader().getTraderId();
             if(orderVol>vol-consume){
                 //update orderitem
                 orderitem.setVol(orderVol-vol+consume);

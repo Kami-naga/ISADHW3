@@ -5,6 +5,7 @@ import com.eis.hw.model.entity.Orderitem;
 import com.eis.hw.model.redisentity.ROrderbook;
 
 public interface ROrderbookService {
+    public void init();
     public void save(String s,ROrderbook rOrderbook);
     public ROrderbook get(String s);
     public void insertOrderitem(String bookId, OrderSide side, int price, int vol, Orderitem orderitem);

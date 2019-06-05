@@ -5,6 +5,7 @@ import java.util.*;
 
 
 public class Orderbook implements Serializable {
+    private String OrderBookId;
     private List<Ordernode> sells = new LinkedList<>();
     private List<Ordernode> buys = new LinkedList<>();
     private List<Ordernode> stopSells = new LinkedList<>();
@@ -60,5 +61,13 @@ public class Orderbook implements Serializable {
     };
 
     public void test(){
+    }
+
+    public String getOrderBookId() {
+        return OrderBookId;
+    }
+
+    public void setOrderBookId(String orderBookId) {
+        OrderBookId = orderBookId;
     }
 }

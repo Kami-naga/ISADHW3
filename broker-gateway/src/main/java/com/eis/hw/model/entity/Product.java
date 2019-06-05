@@ -1,35 +1,23 @@
 package com.eis.hw.model.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import lombok.Data;
+
+import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
+@Data
 public class Product {
-    private Long productId;
-    private String name;
 
     @Id
-    @Column(name = "product_id")
-    public Long getProductId() {
-        return productId;
-    }
+    @GeneratedValue
+    private Long productId;
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
-    }
+    private String name;
 
-    @Basic
-    @Column(name = "name")
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    @OneToMany
+    private List<Instrument> instruments;
 
     @Override
     public boolean equals(Object o) {

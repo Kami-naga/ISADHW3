@@ -8,6 +8,7 @@ import com.eis.hw.model.redisentity.ROrdernode;
 import com.eis.hw.service.OrderbookService;
 import com.eis.hw.service.OrdernodeService;
 import com.eis.hw.service.ROrdernodeService;
+import com.eis.hw.util.ProtostuffUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,6 +67,7 @@ public class OrderbookServiceImpl implements OrderbookService {
         showOrdernodes(orderbook.getSells(), "sells");
         showOrdernodes(orderbook.getStopBuys(), "stopBuys");
         showOrdernodes(orderbook.getStopSells(), "stopSells");
+        transferOrder(ProtostuffUtils.serialize(orderbook));
     }
 
     public void showOrdernodes(List<Ordernode> ordernodes, String info) {
@@ -77,7 +79,7 @@ public class OrderbookServiceImpl implements OrderbookService {
             List<Orderitem> orderitems = ordernode.getOrderitemList();
             for(int j=0;j<orderitems.size();j++){
                 Orderitem orderitem = orderitems.get(j);
-                System.out.println("trader:"+String.valueOf(orderitem.getTraderId())+" "+String.valueOf(orderitem.getVol()));
+                System.out.println("trader:"+String.valueOf(orderitem.getTrader().getTraderId())+" "+String.valueOf(orderitem.getVol()));
             }
             System.out.println("------------------------------------------------------");
         }

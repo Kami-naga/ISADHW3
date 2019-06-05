@@ -1,57 +1,33 @@
 package com.eis.hw.model.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import lombok.Data;
+
+import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
+@Data
 public class Trader {
-    private Long traderId;
-    private String name;
-    private String company;
-    private Byte otherSee;
 
     @Id
-    @Column(name = "trader_id")
-    public Long getTraderId() {
-        return traderId;
-    }
+    @GeneratedValue
+    private Long traderId;
 
-    public void setTraderId(Long traderId) {
-        this.traderId = traderId;
-    }
+    private String name;
 
-    @Basic
-    @Column(name = "name")
-    public String getName() {
-        return name;
-    }
+    private String company;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    private Byte otherSee;
 
-    @Basic
-    @Column(name = "company")
-    public String getCompany() {
-        return company;
-    }
+    @OneToMany
+    private List<Orderitem> orderitems;
 
-    public void setCompany(String company) {
-        this.company = company;
-    }
+    @OneToMany
+    private List<Trade> init_trades;
 
-    @Basic
-    @Column(name = "other_see")
-    public Byte getOtherSee() {
-        return otherSee;
-    }
-
-    public void setOtherSee(Byte otherSee) {
-        this.otherSee = otherSee;
-    }
+    @OneToMany
+    private List<Trade> comple_trades;
 
     @Override
     public boolean equals(Object o) {

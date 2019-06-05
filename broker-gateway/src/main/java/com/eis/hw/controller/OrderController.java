@@ -1,6 +1,8 @@
 package com.eis.hw.controller;
 
+import com.eis.hw.dao.BrokerRepository;
 import com.eis.hw.dao.OrderitemRepository;
+import com.eis.hw.dao.TraderRepository;
 import com.eis.hw.enums.OrderSide;
 import com.eis.hw.model.entity.Orderbook;
 import com.eis.hw.model.entity.Orderitem;
@@ -16,19 +18,30 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class OrderController {
-    @Autowired
-    private ROrderbookService rOrderbookService;
+    private final ROrderbookService rOrderbookService;
+
+    private final OrderbookService orderbookService;
+
+    private final OrderitemRepository orderitemRepository;
+
+    private final BrokerRepository brokerRepository;
+
+    private final TraderRepository traderRepository;
 
     @Autowired
-    private OrderbookService orderbookService;
-
-    @Autowired
-    OrderitemRepository orderitemRepository;
+    public OrderController(ROrderbookService rOrderbookService, OrderbookService orderbookService, OrderitemRepository orderitemRepository, BrokerRepository brokerRepository, TraderRepository traderRepository) {
+        this.rOrderbookService = rOrderbookService;
+        this.orderbookService = orderbookService;
+        this.orderitemRepository = orderitemRepository;
+        this.brokerRepository = brokerRepository;
+        this.traderRepository = traderRepository;
+    }
 
     @PostMapping(value="showDetail")
     @ResponseBody
     public Orderbook showDetail(Long broker_id,Long instrument_id){
         String bookId = "B"+String.valueOf(broker_id)+"I"+String.valueOf(instrument_id);
+
         ROrderbook rOrderbook = rOrderbookService.get(bookId);
         Orderbook orderbook = orderbookService.construct(rOrderbook);
         //orderbookService.showOrderbook(orderbook);
@@ -39,8 +52,9 @@ public class OrderController {
     @ResponseBody
     public void init(){
         //init
-        ROrderbook rob = new ROrderbook();
-        rOrderbookService.save("B1I1",rob);
+//        ROrderbook rob = new ROrderbook();
+//        rOrderbookService.save("B1I1",rob);
+        rOrderbookService.init();
     }
 
     @PostMapping(value="cancel")
@@ -66,8 +80,8 @@ public class OrderController {
 
         //else insert it
         Orderitem orderitem = new Orderitem();
-        orderitem.setBrokerId(broker_id);
-        orderitem.setTraderId(trader_id);
+        orderitem.setBroker(brokerRepository.findById(broker_id).get());
+        orderitem.setTrader(traderRepository.findById(trader_id).get());
         orderitem.setVol(qty);
 
         orderitem = orderitemRepository.save(orderitem);
@@ -108,8 +122,8 @@ public class OrderController {
             return;
         }
         Orderitem orderitem = new Orderitem();
-        orderitem.setBrokerId(broker_id);
-        orderitem.setTraderId(trader_id);
+        orderitem.setBroker(brokerRepository.findById(broker_id).get());
+        orderitem.setTrader(traderRepository.findById(trader_id).get());
         orderitem.setVol(rest);
 
         orderitem = orderitemRepository.save(orderitem);

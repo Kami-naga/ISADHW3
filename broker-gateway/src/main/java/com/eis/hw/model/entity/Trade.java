@@ -1,88 +1,35 @@
 package com.eis.hw.model.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+@Data
 public class Trade {
-    private Long tradeId;
-    private Long instrumentId;
-    private Double price;
-    private Integer qty;
-    private Long initiatorId;
-    private String initiatorBuy;
-    private Long completionId;
 
     @Id
-    @Column(name = "trade_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long getTradeId() {
-        return tradeId;
-    }
+    @GeneratedValue
+    private Long tradeId;
 
-    public void setTradeId(Long tradeId) {
-        this.tradeId = tradeId;
-    }
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name="instrumentId")
+    private Instrument instrument;
 
-    @Basic
-    @Column(name = "instrument_id")
-    public Long getInstrumentId() {
-        return instrumentId;
-    }
+    private Double price;
 
-    public void setInstrumentId(Long instrumentId) {
-        this.instrumentId = instrumentId;
-    }
+    private Integer qty;
 
-    @Basic
-    @Column(name = "price")
-    public Double getPrice() {
-        return price;
-    }
+    @ManyToOne
+    @JoinColumn(name="initiatorId")
+    private Trader initiator;
 
-    public void setPrice(Double price) {
-        this.price = price;
-    }
+    private String initiatorBuy;
 
-    @Basic
-    @Column(name = "qty")
-    public Integer getQty() {
-        return qty;
-    }
-
-    public void setQty(Integer qty) {
-        this.qty = qty;
-    }
-
-    @Basic
-    @Column(name = "initiator_id")
-    public Long getInitiatorId() {
-        return initiatorId;
-    }
-
-    public void setInitiatorId(Long initiatorId) {
-        this.initiatorId = initiatorId;
-    }
-
-    @Basic
-    @Column(name = "initiator_buy")
-    public String getInitiatorBuy() {
-        return initiatorBuy;
-    }
-
-    public void setInitiatorBuy(String initiatorBuy) {
-        this.initiatorBuy = initiatorBuy;
-    }
-
-    @Basic
-    @Column(name = "completion_id")
-    public Long getCompletionId() {
-        return completionId;
-    }
-
-    public void setCompletionId(Long completionId) {
-        this.completionId = completionId;
-    }
+    @ManyToOne
+    @JoinColumn(name="completionId")
+    private Trader completion;
 
     @Override
     public boolean equals(Object o) {
@@ -90,17 +37,16 @@ public class Trade {
         if (o == null || getClass() != o.getClass()) return false;
         Trade trade = (Trade) o;
         return tradeId == trade.tradeId &&
-                Objects.equals(instrumentId, trade.instrumentId) &&
+                Objects.equals(this.getInstrument().getInstrumentId(), trade.getInstrument().getInstrumentId()) &&
                 Objects.equals(price, trade.price) &&
                 Objects.equals(qty, trade.qty) &&
-                Objects.equals(initiatorId, trade.initiatorId) &&
+                Objects.equals(this.getInitiator().getTraderId(), trade.getInitiator().getTraderId()) &&
                 Objects.equals(initiatorBuy, trade.initiatorBuy) &&
-                Objects.equals(completionId, trade.completionId);
+                Objects.equals(this.getCompletion().getTraderId(), trade.getCompletion().getTraderId());
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(tradeId, instrumentId, price, qty, initiatorId, initiatorBuy, completionId);
+        return Objects.hash(tradeId, this.getInstrument().getInstrumentId(), price, qty, this.getInitiator().getTraderId(), initiatorBuy, this.getCompletion().getTraderId());
     }
 }

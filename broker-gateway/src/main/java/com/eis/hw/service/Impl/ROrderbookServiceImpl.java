@@ -1,7 +1,11 @@
 package com.eis.hw.service.Impl;
 
+import com.eis.hw.dao.BrokerRepository;
+import com.eis.hw.dao.InstrumentRepository;
 import com.eis.hw.dao.OrderitemRepository;
 import com.eis.hw.enums.OrderSide;
+import com.eis.hw.model.entity.Broker;
+import com.eis.hw.model.entity.Instrument;
 import com.eis.hw.model.entity.Orderitem;
 import com.eis.hw.model.redisentity.ROrderbook;
 import com.eis.hw.model.redisentity.ROrdernode;
@@ -22,6 +26,27 @@ public class ROrderbookServiceImpl implements ROrderbookService {
 
     @Autowired
     private OrderitemRepository orderitemRepository;
+
+    @Autowired
+    private InstrumentRepository instrumentRepository;
+
+    @Autowired
+    private BrokerRepository brokerRepository;
+
+    @Override
+    public void init() {
+        List<Instrument> instruments = instrumentRepository.findAll();
+        System.out.println(instruments);
+        List<Broker> brokers = brokerRepository.findAll();
+        System.out.println(brokers);
+        for (Broker broker: brokers) {
+            for (Instrument instrument: instruments) {
+                String bookId = "B"+String.valueOf(broker.getBrokerId())+"I"+String.valueOf(instrument.getInstrumentId());
+                ROrderbook rOrderbook = new ROrderbook();
+                save(bookId, rOrderbook);
+            }
+        }
+    }
 
     @Override
     public void save(String s, ROrderbook rOrderbook) {
@@ -219,7 +244,7 @@ public class ROrderbookServiceImpl implements ROrderbookService {
                 Orderitem orderitem = orderitemRepository.findById(bnode.getOrders().get(0)).get();
                 OrderSide side = OrderSide.BUY;
                 int vol = orderitem.getVol();
-                Long initiatorId = orderitem.getTraderId();
+                Long initiatorId = orderitem.getTrader().getTraderId();
                 int sz = sells.size();
                 int i = 0;
                 int consume = 0;
@@ -311,7 +336,7 @@ public class ROrderbookServiceImpl implements ROrderbookService {
                 Orderitem orderitem = orderitemRepository.findById(snode.getOrders().get(0)).get();
                 OrderSide side = OrderSide.SELL;
                 int vol = orderitem.getVol();
-                Long initiatorId = orderitem.getTraderId();
+                Long initiatorId = orderitem.getTrader().getTraderId();
                 int sz = buys.size();
                 int i = 0;
                 int consume = 0;

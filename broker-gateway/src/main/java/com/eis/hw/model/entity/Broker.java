@@ -1,35 +1,26 @@
 package com.eis.hw.model.entity;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import lombok.Data;
+import lombok.ToString;
+
+import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
+@Data
 public class Broker {
+    @Id
+    @GeneratedValue
     private Long brokerId;
+
     private String name;
 
-    @Id
-    @Column(name = "broker_id")
-    public Long getBrokerId() {
-        return brokerId;
-    }
+    @OneToMany
+    private List<Instrument> instruments;
 
-    public void setBrokerId(Long brokerId) {
-        this.brokerId = brokerId;
-    }
-
-    @Basic
-    @Column(name = "name")
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    @OneToMany
+    private List<Orderitem> orderitems;
 
     @Override
     public boolean equals(Object o) {
@@ -42,7 +33,6 @@ public class Broker {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(brokerId, name);
     }
 }

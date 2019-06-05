@@ -1,7 +1,9 @@
 package com.eis.hw.rabbitmq;
 
 
+import com.eis.hw.dao.BrokerRepository;
 import com.eis.hw.dao.OrderitemRepository;
+import com.eis.hw.dao.TraderRepository;
 import com.eis.hw.enums.OrderSide;
 import com.eis.hw.enums.OrderType;
 import com.eis.hw.form.InstrumentForm;
@@ -24,11 +26,17 @@ public class OrderReceiver {
 
     private final OrderbookService orderbookService;
 
+    private final BrokerRepository brokerRepository;
+
+    private final TraderRepository traderRepository;
+
     @Autowired
-    public OrderReceiver(ROrderbookService rOrderbookService, OrderitemRepository orderitemRepository, OrderbookService orderbookService) {
+    public OrderReceiver(ROrderbookService rOrderbookService, OrderitemRepository orderitemRepository, OrderbookService orderbookService, BrokerRepository brokerRepository, TraderRepository traderRepository) {
         this.rOrderbookService = rOrderbookService;
         this.orderitemRepository = orderitemRepository;
         this.orderbookService = orderbookService;
+        this.brokerRepository = brokerRepository;
+        this.traderRepository = traderRepository;
     }
 
     @RabbitListener(queues = "trader")
@@ -58,8 +66,8 @@ public class OrderReceiver {
                 if(rest ==0){
                     return;
                 }
-                orderitem.setBrokerId(broker_id);
-                orderitem.setTraderId(trader_id);
+                orderitem.setBroker(brokerRepository.findById(broker_id).get());
+                orderitem.setTrader(traderRepository.findById(trader_id).get());
                 orderitem.setVol(rest);
                 orderitem = orderitemRepository.save(orderitem);
                 rOrderbookService.insertOrderitem(bookId,side,price,rest,orderitem);
@@ -71,8 +79,8 @@ public class OrderReceiver {
                     return;
                 }
                 //else insert it
-                orderitem.setBrokerId(broker_id);
-                orderitem.setTraderId(trader_id);
+                orderitem.setBroker(brokerRepository.findById(broker_id).get());
+                orderitem.setTrader(traderRepository.findById(trader_id).get());
                 orderitem.setVol(qty);
                 orderitem = orderitemRepository.save(orderitem);
                 rOrderbookService.insertStopOrderitem(bookId,side,price,qty,orderitem);
