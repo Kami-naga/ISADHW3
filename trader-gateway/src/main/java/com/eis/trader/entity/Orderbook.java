@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-public class Orderbook implements Serializable {
+public class Orderbook {
     private List<Ordernode> sells = new LinkedList<>();
     private List<Ordernode> buys = new LinkedList<>();
     private List<Ordernode> stopSells = new LinkedList<>();

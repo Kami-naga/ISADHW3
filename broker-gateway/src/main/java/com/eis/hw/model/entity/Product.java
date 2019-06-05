@@ -19,6 +19,8 @@ public class Product {
     @OneToMany
     private List<Instrument> instruments;
 
+    private String imgUrl;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

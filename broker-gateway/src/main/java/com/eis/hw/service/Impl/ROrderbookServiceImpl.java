@@ -11,8 +11,9 @@ import com.eis.hw.model.redisentity.ROrderbook;
 import com.eis.hw.model.redisentity.ROrdernode;
 import com.eis.hw.service.ROrderbookService;
 import com.eis.hw.service.ROrdernodeService;
-import com.eis.hw.util.RedisPool;
-import com.eis.hw.util.SerializeUtil;
+import com.eis.hw.util.ProtostuffUtils;
+import com.eis.hw.util.RedisUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,17 +22,27 @@ import java.util.List;
 @Service
 public class ROrderbookServiceImpl implements ROrderbookService {
 
-    @Autowired
-    private ROrdernodeService rOrdernodeService;
+    private final ROrdernodeService rOrdernodeService;
+
+    private final OrderitemRepository orderitemRepository;
+
+    private final InstrumentRepository instrumentRepository;
+
+    private final BrokerRepository brokerRepository;
+
+    private final RabbitTemplate rabbitTemplate;
+
+    private final RedisUtils redisUtils;
 
     @Autowired
-    private OrderitemRepository orderitemRepository;
-
-    @Autowired
-    private InstrumentRepository instrumentRepository;
-
-    @Autowired
-    private BrokerRepository brokerRepository;
+    public ROrderbookServiceImpl(ROrdernodeService rOrdernodeService, OrderitemRepository orderitemRepository, InstrumentRepository instrumentRepository, BrokerRepository brokerRepository, RabbitTemplate rabbitTemplate, RedisUtils redisUtils) {
+        this.rOrdernodeService = rOrdernodeService;
+        this.orderitemRepository = orderitemRepository;
+        this.instrumentRepository = instrumentRepository;
+        this.brokerRepository = brokerRepository;
+        this.rabbitTemplate = rabbitTemplate;
+        this.redisUtils = redisUtils;
+    }
 
     @Override
     public void init() {
@@ -43,6 +54,7 @@ public class ROrderbookServiceImpl implements ROrderbookService {
             for (Instrument instrument: instruments) {
                 String bookId = "B"+String.valueOf(broker.getBrokerId())+"I"+String.valueOf(instrument.getInstrumentId());
                 ROrderbook rOrderbook = new ROrderbook();
+                rOrderbook.setOrderBookId(bookId);
                 save(bookId, rOrderbook);
             }
         }
@@ -50,13 +62,13 @@ public class ROrderbookServiceImpl implements ROrderbookService {
 
     @Override
     public void save(String s, ROrderbook rOrderbook) {
-        RedisPool.getJedis().set(s.getBytes(), SerializeUtil.serialize(rOrderbook));
+//        transferOrder(ProtostuffUtils.serialize(rOrderbook));
+        redisUtils.set(s, rOrderbook);
     }
 
     @Override
     public ROrderbook get(String s) {
-        byte[] rob = RedisPool.getJedis().get(s.getBytes());
-        return (ROrderbook) SerializeUtil.unserialize(rob);
+        return (ROrderbook) redisUtils.get(s);
     }
 
     @Override
@@ -713,5 +725,13 @@ public class ROrderbookServiceImpl implements ROrderbookService {
 
         }
         return 0;
+    }
+
+    @Override
+    public boolean transferOrder(byte[] data) {
+        String topicExchangeName = "exchange";
+        String queueName = "orderBook";
+        rabbitTemplate.convertAndSend(topicExchangeName, queueName, data);
+        return true;
     }
 }

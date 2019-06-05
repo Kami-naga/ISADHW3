@@ -1,13 +1,18 @@
-package com.eis.hw.model.redisentity;
+package com.eis.trader.entity;
+
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ROrderbook implements Serializable{
+/**
+ * Created by kaclarpt on 2019/6/5
+ */
+
+public class ROrderbook implements Serializable {
 
     private String orderBookId;
-
     private List<String> buys = new LinkedList<>();
 
     private List<String> sells = new LinkedList<>();

@@ -3,6 +3,7 @@ package com.eis.hw.controller;
 import com.eis.hw.dao.BrokerRepository;
 import com.eis.hw.dao.OrderitemRepository;
 import com.eis.hw.dao.TraderRepository;
+import com.eis.hw.dto.OrderDTO;
 import com.eis.hw.enums.OrderSide;
 import com.eis.hw.model.entity.Orderbook;
 import com.eis.hw.model.entity.Orderitem;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -107,9 +109,17 @@ public class OrderController {
 
     @PostMapping(value = "limit")
     @ResponseBody
-    public void getLimitOrder(Long trader_id, int price, int qty, String side, Long broker_id, Long instrument_id){
+    public void getLimitOrder(@RequestBody OrderDTO orderDTO){
 
         //load orderbook
+        Long trader_id = orderDTO.getTraderId();
+        int price = orderDTO.getPrice();
+        int qty = orderDTO.getQty();
+        OrderSide side = orderDTO.getOrderSide();
+        Long broker_id = orderDTO.getBrokerId();
+        Long instrument_id = orderDTO.getInstrumentId();
+        System.out.println(orderDTO.toString());
+//        Long trader_id, int price, int qty, String side, Long broker_id, Long instrument_id
         String bookId = "B"+String.valueOf(broker_id)+"I"+String.valueOf(instrument_id);
         OrderSide orderSide = side.equals("buy")?OrderSide.BUY:OrderSide.SELL;
         //check and consume order

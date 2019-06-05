@@ -3,10 +3,13 @@ package com.eis.hw.service.Impl;
 import com.eis.hw.dao.OrderitemRepository;
 import com.eis.hw.enums.OrderSide;
 import com.eis.hw.model.entity.Orderitem;
+import com.eis.hw.model.redisentity.ROrderbook;
 import com.eis.hw.model.redisentity.ROrdernode;
 import com.eis.hw.service.ROrdernodeService;
 import com.eis.hw.service.TradeService;
+import com.eis.hw.util.ProtostuffUtils;
 import com.eis.hw.util.RedisPool;
+import com.eis.hw.util.RedisUtils;
 import com.eis.hw.util.SerializeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,11 +19,18 @@ import java.util.List;
 @Service
 public class ROrdernodeServiceImpl implements ROrdernodeService {
 
-    @Autowired
-    private OrderitemRepository orderitemRepository;
+    private final OrderitemRepository orderitemRepository;
+
+    private final TradeService tradeService;
+
+    private final RedisUtils redisUtils;
 
     @Autowired
-    private TradeService tradeService;
+    public ROrdernodeServiceImpl(OrderitemRepository orderitemRepository, TradeService tradeService, RedisUtils redisUtils) {
+        this.orderitemRepository = orderitemRepository;
+        this.tradeService = tradeService;
+        this.redisUtils = redisUtils;
+    }
 
     @Override
     //return rest
@@ -118,7 +128,7 @@ public class ROrdernodeServiceImpl implements ROrdernodeService {
 
     @Override
     public void save(String s, ROrdernode rOrdernode) {
-        RedisPool.getJedis().set(s.getBytes(), SerializeUtil.serialize(rOrdernode));
+        redisUtils.set(s,rOrdernode);
     }
 
     @Override
@@ -143,10 +153,8 @@ public class ROrdernodeServiceImpl implements ROrdernodeService {
 
     @Override
     public ROrdernode get(String s) {
-        byte[] rob = RedisPool.getJedis().get(s.getBytes());
-        return (ROrdernode)SerializeUtil.unserialize(rob);
+        return (ROrdernode) redisUtils.get(s);
     }
-
 
 
 }

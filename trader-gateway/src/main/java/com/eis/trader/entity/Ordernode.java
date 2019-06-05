@@ -1,9 +1,10 @@
 package com.eis.trader.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Ordernode {
+public class Ordernode implements Serializable {
     private int vol;
     private int price;
     private List<Orderitem> orderitemList = new ArrayList<>();
