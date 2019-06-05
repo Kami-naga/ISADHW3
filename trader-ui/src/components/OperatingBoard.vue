@@ -57,12 +57,12 @@
                   </div>
                   <div class="card-item">
                     <div style="width:300px;text-align:left;padding-left:10px;display:flex;flex-direction:row;align-items:center">
-                      <p>qty:</p>
-                      <input v-model="qty" style="outline:none;margin:5px;width:200px;text-align:center;border-style:none"/>
-                    </div>
-                    <div style="border-left:1px solid #a8a8a8;width:300px;text-align:left;padding-left:10px;display:flex;flex-direction:row;align-items:center">
                       <p>price:</p>
                       <input v-model="price" style="outline:none;margin:5px;width:200px;text-align:center;border-style:none"/>
+                    </div>
+                    <div style="border-left:1px solid #a8a8a8;width:300px;text-align:left;padding-left:10px;display:flex;flex-direction:row;align-items:center">
+                      <p>qty:</p>
+                      <input v-model="qty" style="outline:none;margin:5px;width:200px;text-align:center;border-style:none"/>
                     </div>
                   </div>
                   <div class="card-item">
@@ -95,12 +95,12 @@
                   </div>
                   <div class="card-item">
                     <div style="width:300px;text-align:left;padding-left:10px;display:flex;flex-direction:row;align-items:center">
-                      <p>qty:</p>
-                      <input v-model="qty" style="outline:none;margin:5px;width:200px;text-align:center;border-style:none"/>
-                    </div>
-                    <div style="border-left:1px solid #a8a8a8;width:300px;text-align:left;padding-left:10px;display:flex;flex-direction:row;align-items:center">
                       <p>price:</p>
                       <input v-model="price" style="outline:none;margin:5px;width:200px;text-align:center;border-style:none"/>
+                    </div>
+                    <div style="border-left:1px solid #a8a8a8;width:300px;text-align:left;padding-left:10px;display:flex;flex-direction:row;align-items:center">
+                      <p>qty:</p>
+                      <input v-model="qty" style="outline:none;margin:5px;width:200px;text-align:center;border-style:none"/>
                     </div>
                   </div>
                   <div class="card-item">
