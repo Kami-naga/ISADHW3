@@ -31,7 +31,7 @@ public class OrderController {
         String bookId = "B"+String.valueOf(broker_id)+"I"+String.valueOf(instrument_id);
         ROrderbook rOrderbook = rOrderbookService.get(bookId);
         Orderbook orderbook = orderbookService.construct(rOrderbook);
-        orderbookService.showOrderbook(orderbook);
+        //orderbookService.showOrderbook(orderbook);
         return orderbook;
     }
 
