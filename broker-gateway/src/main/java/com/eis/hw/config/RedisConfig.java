@@ -1,4 +1,5 @@
-package com.eis.trader.config;
+package com.eis.hw.config;
+//
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,10 @@ import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+//
+///**
+// * Created by kaclarpt on 2019/5/20
+// */
 @Configuration
 public class RedisConfig {
 
@@ -47,4 +52,3 @@ public class RedisConfig {
         return template;
     }
 }
-

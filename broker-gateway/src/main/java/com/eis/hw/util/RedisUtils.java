@@ -1,4 +1,4 @@
-package com.eis.trader.util;
+package com.eis.hw.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
