@@ -1,6 +1,5 @@
 package com.eis.trader;
 
-import com.eis.trader.rabbitmq.StreamClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

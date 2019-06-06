@@ -2,7 +2,11 @@ package com.eis.hw.service;
 
 import com.eis.hw.enums.OrderSide;
 import com.eis.hw.model.entity.Orderitem;
+import com.eis.hw.model.entity.Ordernode;
 import com.eis.hw.model.redisentity.ROrderbook;
+import com.eis.hw.vo.OrderNodeVO;
+
+import java.util.List;
 
 public interface ROrderbookService {
     void init();
@@ -16,4 +20,9 @@ public interface ROrderbookService {
     boolean consumeStop(String bookId, OrderSide side, int stopPrice, int vol, Long traderId);
     int cancel(Long orderId);
     boolean transferOrder(byte[] data);
+    void publishOrderBook(String bookId);
+
+    List<OrderNodeVO> getBuyFive(ROrderbook rOrderbook);
+    List<OrderNodeVO> getSellFive(ROrderbook rOrderbook);
+
 }

@@ -12,8 +12,12 @@ import com.eis.hw.util.RedisPool;
 import com.eis.hw.util.RedisUtils;
 import com.eis.hw.util.SerializeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Service
@@ -24,6 +28,12 @@ public class ROrdernodeServiceImpl implements ROrdernodeService {
     private final TradeService tradeService;
 
     private final RedisUtils redisUtils;
+
+    @Resource
+    private RedisTemplate<String, ROrdernode> redisTemplate;
+
+    @Autowired
+    private RedisConnection redisConnection;
 
     @Autowired
     public ROrdernodeServiceImpl(OrderitemRepository orderitemRepository, TradeService tradeService, RedisUtils redisUtils) {
@@ -128,7 +138,8 @@ public class ROrdernodeServiceImpl implements ROrdernodeService {
 
     @Override
     public void save(String s, ROrdernode rOrdernode) {
-        redisUtils.set(s,rOrdernode);
+        byte[] rOrdernode_byte = SerializeUtil.serialize(rOrdernode);
+        redisConnection.set(s.getBytes(), rOrdernode_byte);
     }
 
     @Override
@@ -153,7 +164,10 @@ public class ROrdernodeServiceImpl implements ROrdernodeService {
 
     @Override
     public ROrdernode get(String s) {
-        return (ROrdernode) redisUtils.get(s);
+        JdkSerializationRedisSerializer serializer = new JdkSerializationRedisSerializer();
+        byte[] rOrdernode_byte = redisConnection.get(s.getBytes());
+        ROrdernode rOrdernode = (ROrdernode) serializer.deserialize(rOrdernode_byte);
+        return rOrdernode;
     }
 
 

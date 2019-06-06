@@ -20,7 +20,6 @@ public class OrderDTO {
 
     private Long instrumentId;
 
-
     private OrderSide orderSide;
 
     private OrderType orderType;

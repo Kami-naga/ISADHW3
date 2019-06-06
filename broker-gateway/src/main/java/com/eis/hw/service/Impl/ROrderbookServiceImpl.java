@@ -4,25 +4,36 @@ import com.eis.hw.dao.BrokerRepository;
 import com.eis.hw.dao.InstrumentRepository;
 import com.eis.hw.dao.OrderitemRepository;
 import com.eis.hw.enums.OrderSide;
-import com.eis.hw.model.entity.Broker;
-import com.eis.hw.model.entity.Instrument;
-import com.eis.hw.model.entity.Orderitem;
+import com.eis.hw.model.entity.*;
 import com.eis.hw.model.redisentity.ROrderbook;
 import com.eis.hw.model.redisentity.ROrdernode;
+import com.eis.hw.service.OrderbookService;
 import com.eis.hw.service.ROrderbookService;
 import com.eis.hw.service.ROrdernodeService;
 import com.eis.hw.util.ProtostuffUtils;
 import com.eis.hw.util.RedisUtils;
+import com.eis.hw.util.SerializeUtil;
+import com.eis.hw.vo.OrderNodeVO;
+import com.eis.hw.vo.OrderbookVO;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
 public class ROrderbookServiceImpl implements ROrderbookService {
 
     private final ROrdernodeService rOrdernodeService;
+
 
     private final OrderitemRepository orderitemRepository;
 
@@ -32,16 +43,20 @@ public class ROrderbookServiceImpl implements ROrderbookService {
 
     private final RabbitTemplate rabbitTemplate;
 
-    private final RedisUtils redisUtils;
+    @Autowired
+    private OrderbookService orderbookService;
 
     @Autowired
-    public ROrderbookServiceImpl(ROrdernodeService rOrdernodeService, OrderitemRepository orderitemRepository, InstrumentRepository instrumentRepository, BrokerRepository brokerRepository, RabbitTemplate rabbitTemplate, RedisUtils redisUtils) {
+    @Qualifier("conn")
+    RedisConnection redisConnection;
+
+    @Autowired
+    public ROrderbookServiceImpl(ROrdernodeService rOrdernodeService, OrderitemRepository orderitemRepository, InstrumentRepository instrumentRepository, BrokerRepository brokerRepository, RabbitTemplate rabbitTemplate) {
         this.rOrdernodeService = rOrdernodeService;
         this.orderitemRepository = orderitemRepository;
         this.instrumentRepository = instrumentRepository;
         this.brokerRepository = brokerRepository;
         this.rabbitTemplate = rabbitTemplate;
-        this.redisUtils = redisUtils;
     }
 
     @Override
@@ -56,6 +71,7 @@ public class ROrderbookServiceImpl implements ROrderbookService {
                 ROrderbook rOrderbook = new ROrderbook();
                 rOrderbook.setOrderBookId(bookId);
                 save(bookId, rOrderbook);
+                publishOrderBook(bookId);
             }
         }
     }
@@ -63,12 +79,18 @@ public class ROrderbookServiceImpl implements ROrderbookService {
     @Override
     public void save(String s, ROrderbook rOrderbook) {
 //        transferOrder(ProtostuffUtils.serialize(rOrderbook));
-        redisUtils.set(s, rOrderbook);
+//        JdkSerializationRedisSerializer serializer = new JdkSerializationRedisSerializer();
+        byte[] rOrderbook_byte = SerializeUtil.serialize(rOrderbook);
+        redisConnection.set(s.getBytes(), rOrderbook_byte);
+//        redisTemplate.opsForValue().set(s.getBytes(), SerializeUtil.serialize(rOrderbook));
     }
 
     @Override
     public ROrderbook get(String s) {
-        return (ROrderbook) redisUtils.get(s);
+        JdkSerializationRedisSerializer serializer = new JdkSerializationRedisSerializer();
+        byte[] rOrderbook_byte = redisConnection.get(s.getBytes());
+        ROrderbook rOrderbook = (ROrderbook) serializer.deserialize(rOrderbook_byte);
+        return rOrderbook;
     }
 
     @Override
@@ -733,5 +755,59 @@ public class ROrderbookServiceImpl implements ROrderbookService {
         String queueName = "orderBook";
         rabbitTemplate.convertAndSend(topicExchangeName, queueName, data);
         return true;
+    }
+
+    @Override
+    public void publishOrderBook(String bookId) {
+        byte[] rOrderbook_byte = redisConnection.get(bookId.getBytes());
+        ROrderbook rOrderbook = (ROrderbook) SerializeUtil.unserialize(rOrderbook_byte);
+        OrderbookVO orderbookVO = new OrderbookVO();
+        orderbookVO.setOrderbookId(rOrderbook.getOrderBookId());
+        orderbookVO.setBuysFive(getBuyFive(rOrderbook));
+        orderbookVO.setSellsFive(getSellFive(rOrderbook));
+        System.out.println(Arrays.toString(ProtostuffUtils.serialize(orderbookVO)));
+        transferOrder(ProtostuffUtils.serialize(orderbookVO));
+    }
+
+    @Override
+    public List<OrderNodeVO> getBuyFive(ROrderbook rOrderbook) {
+        List<String> buys = rOrderbook.getBuys();
+        List<OrderNodeVO> buysVO = new LinkedList<>();
+        return extractFive(buysVO, buys);
+    }
+
+    @Override
+    public List<OrderNodeVO> getSellFive(ROrderbook rOrderbook) {
+        List<String> sells = rOrderbook.getSells();
+        List<OrderNodeVO> sellsVO = new LinkedList<>();
+        return extractFive(sellsVO, sells);
+    }
+
+    public List<OrderNodeVO> extractFive( List<OrderNodeVO> dest, List<String> origin) {
+        int length = origin.size();
+        if (length == 0)
+            return null;
+        if (length > 5) {
+            for (int i = 0; i < 5; i++) {
+                String nodeId = origin.get(i);
+                ROrdernode rOrdernode = rOrdernodeService.get(nodeId);
+                OrderNodeVO orderNodeVO = new OrderNodeVO();
+                orderNodeVO.setPrice(rOrdernode.getPrice());
+                orderNodeVO.setVolumn(rOrdernode.getVol());
+                dest.add(i, orderNodeVO);
+            }
+        }
+        else {
+            int index = 0;
+            for (String nodeId: origin) {
+                ROrdernode rOrdernode = rOrdernodeService.get(nodeId);
+                OrderNodeVO orderNodeVO = new OrderNodeVO();
+                orderNodeVO.setPrice(rOrdernode.getPrice());
+                orderNodeVO.setVolumn(rOrdernode.getVol());
+                dest.add(index, orderNodeVO);
+                index++;
+            }
+        }
+        return dest;
     }
 }

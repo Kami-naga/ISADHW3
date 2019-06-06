@@ -818,6 +818,7 @@ export default {
 　　　}
     }).then((response)=>{
       var tmp = response.data
+      console.log(JSON.stringify(tmp))
       this.construct(tmp)
 
     }).catch((error)=>{

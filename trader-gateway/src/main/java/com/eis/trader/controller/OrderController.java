@@ -1,18 +1,23 @@
 package com.eis.trader.controller;
 
 import com.eis.trader.dto.OrderDTO;
-import com.eis.trader.entity.Orderbook;
 import com.eis.trader.entity.ROrderbook;
-import com.eis.trader.enums.OrderType;
-import com.eis.trader.form.InstrumentForm;
 import com.eis.trader.service.OrderService;
+import com.eis.trader.util.MyObjectInputStream;
 import com.eis.trader.util.ProtostuffUtils;
-import com.eis.trader.util.RedisUtils;
+import com.eis.trader.util.SerializeUtil;
+import com.eis.trader.vo.OrderbookVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.*;
 
 
 /**
@@ -24,12 +29,17 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    private final RedisUtils redisUtils;
 
     @Autowired
-    public OrderController(OrderService orderService, RedisUtils redisUtils) {
+    private RedisTemplate redisTemplate;
+
+    @Autowired
+    private RedisConnection redisConnection;
+
+
+    @Autowired
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
-        this.redisUtils = redisUtils;
     }
 
     @PostMapping("/sendOrder")
@@ -41,9 +51,10 @@ public class OrderController {
 
     @PostMapping("/showDetail")
     @ResponseBody
-    public ROrderbook showDetail(Long brokerId, Long instrumentId) {
-        String bookId = "B" + String.valueOf(brokerId) + "I" + String.valueOf(instrumentId);
-        System.out.println(redisUtils.get("B1I1"));
-        return null;
+    public OrderbookVO showDetail(Long brokerId, Long instrumentId) {
+        String bookId = "B" + String.valueOf(brokerId) + "I" + String.valueOf(instrumentId) + "T";
+        byte[] rOrderbook_byte = redisConnection.get(bookId.getBytes());
+        OrderbookVO orderbookVO = (OrderbookVO) SerializeUtil.unserialize(rOrderbook_byte);
+        return orderbookVO;
     }
 }

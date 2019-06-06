@@ -43,8 +43,18 @@ public class OrderReceiver {
     }
 
     @RabbitListener(queues = "trader")
-    public void consumeOrder(byte[] data) throws Exception {
+    public void receive(byte[] data) {
         OrderDTO orderDTO = ProtostuffUtils.deserialize(data, OrderDTO.class);
+        try {
+            consumeOrder(orderDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        rOrderbookService.publishOrderBook(String.valueOf(orderDTO.getBookId()));
+    }
+
+    public void consumeOrder(OrderDTO orderDTO) throws Exception {
         log.info(orderDTO.toString());
         OrderType orderType = orderDTO.getOrderType();
         String bookId = String.valueOf(orderDTO.getBookId());

@@ -67,7 +67,6 @@ public class OrderbookServiceImpl implements OrderbookService {
         showOrdernodes(orderbook.getSells(), "sells");
         showOrdernodes(orderbook.getStopBuys(), "stopBuys");
         showOrdernodes(orderbook.getStopSells(), "stopSells");
-        transferOrder(ProtostuffUtils.serialize(orderbook));
     }
 
     public void showOrdernodes(List<Ordernode> ordernodes, String info) {

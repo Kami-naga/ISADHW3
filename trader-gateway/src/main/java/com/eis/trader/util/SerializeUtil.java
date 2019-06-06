@@ -1,7 +1,10 @@
-package com.eis.hw.util;
+package com.eis.trader.util;
 
 import java.io.*;
 
+/**
+ * Created by kaclarpt on 2019/6/6
+ */
 public class SerializeUtil {
     public static byte[] serialize(Object object){
         ObjectOutputStream oos = null;
@@ -19,21 +22,6 @@ public class SerializeUtil {
     }
 
     public static Object unserialize(byte[] bytes){
-        ByteArrayInputStream bais;
-        try{
-            bais = new ByteArrayInputStream(bytes);
-            ObjectInputStream ois = new ObjectInputStream(bais);
-            return ois.readObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public static Object myUnserialize(byte[] bytes){
         ByteArrayInputStream bais;
         try{
             bais = new ByteArrayInputStream(bytes);

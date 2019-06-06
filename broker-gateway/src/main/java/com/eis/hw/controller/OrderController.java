@@ -8,10 +8,13 @@ import com.eis.hw.enums.OrderSide;
 import com.eis.hw.model.entity.Orderbook;
 import com.eis.hw.model.entity.Orderitem;
 import com.eis.hw.model.redisentity.ROrderbook;
+import com.eis.hw.model.redisentity.ROrdernode;
 import com.eis.hw.service.OrderbookService;
 import com.eis.hw.service.ROrderbookService;
+import com.eis.hw.util.ProtostuffUtils;
 import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +34,9 @@ public class OrderController {
     private final TraderRepository traderRepository;
 
     @Autowired
+    private RedisConnection redisConnection;
+
+    @Autowired
     public OrderController(ROrderbookService rOrderbookService, OrderbookService orderbookService, OrderitemRepository orderitemRepository, BrokerRepository brokerRepository, TraderRepository traderRepository) {
         this.rOrderbookService = rOrderbookService;
         this.orderbookService = orderbookService;
@@ -48,6 +54,14 @@ public class OrderController {
         Orderbook orderbook = orderbookService.construct(rOrderbook);
         //orderbookService.showOrderbook(orderbook);
         return orderbook;
+    }
+
+    @PostMapping("/test")
+    public void test(Long broker_id,Long instrument_id){
+        String bookId = "B"+String.valueOf(broker_id)+"I"+String.valueOf(instrument_id);
+        byte[] data = redisConnection.get(bookId.getBytes());
+        System.out.println(data);
+        System.out.println(ProtostuffUtils.deserialize(data, ROrderbook.class));
     }
 
     @GetMapping(value = "init")
