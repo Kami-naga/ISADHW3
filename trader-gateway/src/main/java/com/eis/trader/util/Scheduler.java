@@ -30,6 +30,7 @@ public class Scheduler {
         orderbookVO.setOrderbookId("B1I1");
         Random rand =new Random();
         List<OrderNodeVO> buysFive = new LinkedList<>();
+        List<OrderNodeVO> sellsFive = new LinkedList<>();
         for (int i = 0; i < 5; i++) {
             OrderNodeVO orderNodeVO = new OrderNodeVO();
             orderNodeVO.setPrice(rand.nextInt(500)+500);
@@ -41,8 +42,19 @@ public class Scheduler {
                     return o1.getPrice() - o2.getPrice();
                 }
             });
+            orderNodeVO = new OrderNodeVO();
+            orderNodeVO.setPrice(rand.nextInt(500)+500);
+            orderNodeVO.setVolumn(rand.nextInt(500)+500);
+            sellsFive.add(orderNodeVO);
+            sellsFive.sort(new Comparator<OrderNodeVO>() {
+                @Override
+                public int compare(OrderNodeVO o1, OrderNodeVO o2) {
+                    return o1.getPrice() - o2.getPrice();
+                }
+            });
         }
         orderbookVO.setBuysFive(buysFive);
+        orderbookVO.setSellsFive(sellsFive);
         try {
             WebSocketServer.sendInfo(JSONObject.toJSONString(orderbookVO),orderBookId);
         } catch (IOException e) {
