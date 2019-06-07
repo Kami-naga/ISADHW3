@@ -4,6 +4,7 @@ import operatingBoard from '@/components/OperatingBoard'
 import products from '@/components/products'
 import orderbooks from '@/components/orderbooks'
 import orderbook from '@/components/orderbook'
+import test from '@/components/test'
 
 Vue.use(Router)
 
@@ -12,6 +13,10 @@ export default new Router({
     {
       path: '/',
       redirect:'products'
+    },
+    {
+      path: '/test',
+      component: test,
     },
     {
       path:'/products',
