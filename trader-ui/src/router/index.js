@@ -12,7 +12,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect:'orderblotter'
+      redirect:'products'
     },
     {
       path:'/products',
