@@ -51,7 +51,7 @@
         </Row>
       </Col>
       <Col span="12" offset="1">
-        <Tabs v-model="currentTab" @on-click="currentTabChanged" type="card">
+        <Tabs v-if="this.$store.state.user.role=='trader'" v-model="currentTab" @on-click="currentTabChanged" type="card">
           <TabPane label="Market Order" name="market">
             <Row>
               <Col span="22" class="orderCell onTop" >
@@ -260,50 +260,7 @@ export default {
   name: 'result',
   data () {
     return {
-      sells:[
-        {
-          price:1250,
-          vol:50
-        },
-        {
-          price:1260,
-          vol:60
-        },
-        {
-          price:1270,
-          vol:70
-        },
-        {
-          price:1280,
-          vol:80
-        },
-        {
-          price:1290,
-          vol:90
-        },
-        {
-          price:1300,
-          vol:100
-        }
-      ],
-      buys:[
-        {
-          price:1240,
-          vol:140
-        },
-        {
-          price:1230,
-          vol:130
-        },
-        {
-          price:1220,
-          vol:120
-        },
-        {
-          price:1210,
-          vol:110
-        }
-      ],
+
       trader_id:1,
       instrument_id:1,
       broker_id:1,
@@ -344,15 +301,15 @@ export default {
   computed:{
     sellList:function(){
       var sellList = []
-      for(var i=0; i<this.sells.length && i!=5;i++){
-        sellList.push(this.sells[i])
+      for(var i=0; i<this.$store.state.sells.length && i!=5;i++){
+        sellList.push(this.$store.state.sells[i])
       }
       return sellList.reverse()
     },
     buyList:function(){
       var buyList = []
-      for(var i=0; i<this.buys.length && i!=5;i++){
-        buyList.push(this.buys[i])
+      for(var i=0; i<this.$store.state.buys.length && i!=5;i++){
+        buyList.push(this.$store.state.buys[i])
       }
       return buyList
     }

@@ -65,7 +65,7 @@
       </Col>
     </Row>
 
-    <Row v-for="(trade,index) in trades" :key="trade.trade_id">
+    <Row v-for="(trade,index) in this.$store.state.trades" :key="trade.trade_id">
       <Col span="2" class="contentCell" style="border-left:2px solid black" v-bind:class="{ 'contentBottom': index===trades.length-1}">
         {{trade.trade_id}}
       </Col>
@@ -127,26 +127,7 @@ export default {
   name: 'orderblotter',
   data(){
     return{
-      trades:[
-        {
-          trade_id:312393,
-          broker:"M",
-          product:"Gold Swaps",
-          period:"SEP16",
-          price:1245,
-          qty:50,
-          initiator:{
-            trader:'Sam Wang',
-            company:"ABC Corp",
-            side:"sell"
-          },
-          completion:{
-            trader:"Sixian Liu",
-            company:"MS",
-            side:"buy"
-          }
-        }
-      ]
+      
     }
   }
 }

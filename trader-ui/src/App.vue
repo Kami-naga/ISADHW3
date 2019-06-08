@@ -2,8 +2,13 @@
   <div id="app">
     <div style="height:60px;">
       <Row>
-        <Col span="15">
+        <Col span="12">
           ISAD
+        </Col>
+        <Col class="check-trades" span="3">
+          <Button v-if="this.$store.state.user.role=='broker'" @click="addBook" type="info" size="large">
+            添加期货
+          </Button>
         </Col>
         <Col class="check-trades" span="3">
           <Button @click="checkTrades" type="info" size="large">
@@ -16,6 +21,32 @@
       </Row>
     </div>
     <router-view/>
+    <Modal
+      v-model="modalBook"
+      title="添加期货"
+      @on-ok="addbookOk"
+      @on-cancel="addbookCancel">
+      <div style="width:300px">
+        <Row>
+          <Col class="modal-row" span="6" offset="2">
+            类型：
+          </Col>
+          <Col class="modal-row" span="16" >
+            <Select v-model="product" filterable>
+                <Option v-for="item in this.$store.state.products" :value="item.id" :key="item.id">{{ item.ename }}</Option>
+            </Select>
+          </Col>
+        </Row>
+        <Row>
+          <Col class="modal-row" span="6" offset="2">
+            到期日：
+          </Col>
+          <Col class="modal-row" span="16" >
+            <DatePicker format="yyyy-MM-dd" type="date" placeholder="选择日期" @on-change="changePeriod"></DatePicker>
+          </Col>
+        </Row>
+      </div>
+    </Modal>
   </div>
 </template>
 
@@ -26,7 +57,34 @@ export default {
   components:{
     login
   },
+  data(){
+    return {
+      modalBook:false,
+      product:"",
+      period:""
+    }
+  },
   methods:{
+    changePeriod(e){
+      this.period = e
+    },
+    addBook(){
+      this.modalBook = true
+    },
+    clearBook(){
+      this.product = ""
+      this.period = ""
+    },
+    addbookOk(){
+      console.log(this.product,this.period)
+
+      this.modalBook = false
+      this.clearBook()
+    },
+    addbookCancel(){
+      this.modalBook = false
+      this.clearBook()
+    },
     checkTrades(){
       if(this.$route.path.slice(1).split("/")[0]==="orderblotter"){
         this.$router.go(-1)
@@ -58,5 +116,11 @@ export default {
   height:60px;
   display:flex;
   align-items:center;
+}
+
+.modal-row{
+  height:40px;
+  font-size:15px;
+  line-height:40px;
 }
 </style>
