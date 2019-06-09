@@ -147,8 +147,14 @@ export default {
     　　}
       }).then((response)=>{
         console.log(response)
+        this.$Notice.success({
+          title: '注册成功',
+        });
       }).catch((error)=>{
         console.log(error)
+        this.$Notice.success({
+          title: '注册成功',
+        });
       })
 
       this.modalReg = false
@@ -163,6 +169,30 @@ export default {
     },
     loginOk(){
       console.log(this.email,this.password)
+      this.$axios({
+        method:'post',
+        url:this.$store.state.port+"/login",
+        data:{
+          email:this.email,
+          password:this.password,
+        },
+        transformRequest:function(obj) {
+    　　　var str = [];
+    　　　for ( var p in obj) {
+    　　　　str.push(encodeURIComponent(p) + "="
+    　　　　+ encodeURIComponent(obj[p]));
+    　　　}
+    　　　return str.join("&");
+    　　}
+      }).then((response)=>{
+        console.log(response)
+        this.$store.state.user = response.data.user
+
+      }).catch((error)=>{
+        console.log(error)
+
+      })
+
       this.modalLogin = false
       this.clear()
     },
@@ -175,10 +205,15 @@ export default {
         title: '您将退出登陆',
         content: '',
         onOk: () => {
-          this.$Message.info('Clicked ok');
+          this.$store.state.user={
+            id:"",
+            name:"未登录",
+            avatar:"https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1560095880&di=6c3c14f3ec86fa255b75e6ee0546e7f3&src=http://hbimg.b0.upaiyun.com/7842c3e9b5c38401e94851097c0e29f0b48c5f884d66-x9BbFI_fw658",
+            role:""
+          }
         },
         onCancel: () => {
-          this.$Message.info('Clicked cancel');
+
         }
       });
     }

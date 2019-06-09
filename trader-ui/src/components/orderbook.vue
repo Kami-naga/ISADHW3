@@ -260,8 +260,6 @@ export default {
   name: 'result',
   data () {
     return {
-
-      instrument_id:1,
       side:"buy",
       qty:0,
       price:0,
@@ -288,10 +286,122 @@ export default {
       this.confirm=false
     },
     ok(){
+      switch(this.currentTab){
+        case "market":
+          this.$axios({
+            method:'post',
+            url:this.$store.state.port+"/market",
+            data:{
+              bookId:this.$store.state.book.id,
+              brokerId:this.$store.state.broker.id,
+              traderId:this.$store.state.user.id,
+              qty:this.qty,
+              side:this.side,
+            },
+            transformRequest:function(obj) {
+        　　　var str = [];
+        　　　for ( var p in obj) {
+        　　　　str.push(encodeURIComponent(p) + "="
+        　　　　+ encodeURIComponent(obj[p]));
+        　　　}
+        　　　return str.join("&");
+        　　}
+          }).then((response)=>{
+            this.$store.state.sells = response.data.sells
+            this.$store.state.buys = response.data.buys
+          }).catch((error)=>{
+            console.log(error)
+          })
+          break
+        case "limit":
+          this.$axios({
+            method:'post',
+            url:this.$store.state.port+"/limit",
+            data:{
+              bookId:this.$store.state.book.id,
+              brokerId:this.$store.state.broker.id,
+              traderId:this.$store.state.user.id,
+              price:this.price,
+              qty:this.qty,
+              side:this.side,
+            },
+            transformRequest:function(obj) {
+        　　　var str = [];
+        　　　for ( var p in obj) {
+        　　　　str.push(encodeURIComponent(p) + "="
+        　　　　+ encodeURIComponent(obj[p]));
+        　　　}
+        　　　return str.join("&");
+        　　}
+          }).then((response)=>{
+            this.$store.state.sells = response.data.sells
+            this.$store.state.buys = response.data.buys
+          }).catch((error)=>{
+            console.log(error)
+          })
+          break
+        case "stop":
+          this.$axios({
+            method:'post',
+            url:this.$store.state.port+"/stop",
+            data:{
+              bookId:this.$store.state.book.id,
+              brokerId:this.$store.state.broker.id,
+              traderId:this.$store.state.user.id,
+              stopPrice:this.price,
+              qty:this.qty,
+              side:this.side,
+            },
+            transformRequest:function(obj) {
+        　　　var str = [];
+        　　　for ( var p in obj) {
+        　　　　str.push(encodeURIComponent(p) + "="
+        　　　　+ encodeURIComponent(obj[p]));
+        　　　}
+        　　　return str.join("&");
+        　　}
+          }).then((response)=>{
+            this.$store.state.sells = response.data.sells
+            this.$store.state.buys = response.data.buys
 
+          }).catch((error)=>{
+            console.log(error)
+          })
+          break
+        case "cancel":
+          this.$axios({
+            method:'post',
+            url:this.$store.state.port+"/cancel",
+            data:{
+              bookId:this.$store.state.book.id,
+              brokerId:this.$store.state.broker.id,
+              traderId:this.$store.state.user.id,
+              orderId:this.orderId
+            },
+            transformRequest:function(obj) {
+        　　　var str = [];
+        　　　for ( var p in obj) {
+        　　　　str.push(encodeURIComponent(p) + "="
+        　　　　+ encodeURIComponent(obj[p]));
+        　　　}
+        　　　return str.join("&");
+        　　}
+          }).then((response)=>{
+            this.$store.state.sells = response.data.sells
+            this.$store.state.buys = response.data.buys
+
+          }).catch((error)=>{
+            console.log(error)
+          })
+          break
+      }
     },
     cancel(){
-
+      this.side="buy"
+      this.qty=0
+      this.price=0
+      this.orderId=""
+      this.confirm=false
     }
   },
   computed:{

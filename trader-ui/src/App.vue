@@ -32,7 +32,7 @@
             类型：
           </Col>
           <Col class="modal-row" span="16" >
-            <Select v-model="product" filterable>
+            <Select v-model="productId" filterable>
                 <Option v-for="item in this.$store.state.products" :value="item.id" :key="item.id">{{ item.ename }}</Option>
             </Select>
           </Col>
@@ -60,7 +60,7 @@ export default {
   data(){
     return {
       modalBook:false,
-      product:"",
+      productId:"",
       period:""
     }
   },
@@ -72,11 +72,38 @@ export default {
       this.modalBook = true
     },
     clearBook(){
-      this.product = ""
+      this.productId = ""
       this.period = ""
     },
     addbookOk(){
-      console.log(this.product,this.period)
+      console.log(this.productId,this.period)
+      this.$axios({
+        method:'post',
+        url:this.$store.state.port+"/addBook",
+        data:{
+          brokerId : this.$store.state.broker.id,
+          product : this.productId,
+          period : this.period
+        },
+        transformRequest:function(obj) {
+    　　　var str = [];
+    　　　for ( var p in obj) {
+    　　　　str.push(encodeURIComponent(p) + "="
+    　　　　+ encodeURIComponent(obj[p]));
+    　　　}
+    　　　return str.join("&");
+    　　}
+      }).then((response)=>{
+        this.$Notice.success({
+          title: '创建成功',
+        });
+        if(this.$store.state.product.id === this.productId && this.$store.state.broker.id === this.$store.state.user.id){
+          this.$store.state.booksData = response.data.booksData
+        }
+
+      }).catch((error)=>{
+        console.log(error)
+      })
 
       this.modalBook = false
       this.clearBook()
