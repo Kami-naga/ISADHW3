@@ -47,25 +47,25 @@
             </Col>
           </Row>
           <Row>
-            <Col offset="2" style="height:30px;display:flex;align-items:center;font-size:20px">
-              <RadioGroup v-model="role" size="large">
-                  <Radio label="trader">
-                    <span>trader</span>
-                    <Icon type="ios-contact" />
-                  </Radio>
-                  <Radio label="broker" style="margin-left:20px">
-                    <span>broker</span>
-                    <Icon type="logo-snapchat" />
-                  </Radio>
-              </RadioGroup>
-            </Col>
-          </Row>
-          <Row v-if="role==='trader'">
             <Col class="modal-row" span="6" offset="2">
               公司：
             </Col>
             <Col class="modal-row" span="16" >
               <input placeholder="请输入公司名" v-model="company" style="height:100%;outline:none;width:100%;text-align:left;border-style:none"/>
+            </Col>
+          </Row>
+          <Row>
+            <Col offset="2" style="height:30px;display:flex;align-items:center;font-size:20px">
+              <RadioGroup v-model="otherSee" size="large">
+                  <Radio label="0">
+                    <span>他人可见</span>
+                    <Icon type="ios-contact" />
+                  </Radio>
+                  <Radio label="1" style="margin-left:20px">
+                    <span>他人不可见</span>
+                    <Icon type="logo-snapchat" />
+                  </Radio>
+              </RadioGroup>
             </Col>
           </Row>
         </div>
@@ -107,8 +107,8 @@ export default {
       name:"",
       email:"",
       password:"",
-      role:"trader",
-      company:""
+      company:"",
+      otherSee:"0"
     }
   },
   methods:{
@@ -119,11 +119,38 @@ export default {
       this.name="",
       this.email="",
       this.password="",
-      this.role="trader",
       this.company=""
     },
     registerOk(){
-      console.log(this.name,this.email,this.password,this.company)
+      console.log(this.otherSee)
+      var osee = true
+      if(this.otherSee==="1"){
+        osee=false
+      }
+      this.$axios({
+        method:'post',
+        url:this.$store.state.port+"/register",
+        data:{
+          name:this.name,
+          email:this.email,
+          password:this.password,
+          company:this.company,
+          otherSee: osee
+        },
+        transformRequest:function(obj) {
+    　　　var str = [];
+    　　　for ( var p in obj) {
+    　　　　str.push(encodeURIComponent(p) + "="
+    　　　　+ encodeURIComponent(obj[p]));
+    　　　}
+    　　　return str.join("&");
+    　　}
+      }).then((response)=>{
+        console.log(response)
+      }).catch((error)=>{
+        console.log(error)
+      })
+
       this.modalReg = false
       this.clear()
     },

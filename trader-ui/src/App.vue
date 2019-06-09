@@ -100,6 +100,21 @@ export default {
       }
       return false;
     }
+  },
+  mounted(){
+    this.$axios({
+      method:'get',
+      url:this.$store.state.port+"/initPage"
+    }).then((response)=>{
+      console.log(response)
+      this.$store.state.products = response.data.products
+      this.$store.state.brokers = response.data.brokers
+      this.$store.state.booksData = response.data.booksData
+      this.$store.state.product = this.$store.state.products[0]
+      this.$store.state.broker = this.$store.state.brokers[0]
+    }).catch((error)=>{
+      console.log(error)
+    })
   }
 }
 </script>
