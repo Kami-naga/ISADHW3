@@ -5,6 +5,7 @@ import products from '@/components/products'
 import orderbooks from '@/components/orderbooks'
 import orderbook from '@/components/orderbook'
 import test from '@/components/test'
+import orderblotter from '@/components/orderblotter'
 
 Vue.use(Router)
 
@@ -37,6 +38,11 @@ export default new Router({
           component: orderbook
         },
       ]
+    },
+    {
+      path:'/orderblotter',
+      name:'orderblotter',
+      component:orderblotter
     }
   ]
 })

@@ -2,7 +2,7 @@
   <div>
     <Table
      :columns="booksForm"
-     :data="booksData"
+     :data="this.$store.state.booksData"
     ></Table>
   </div>
 </template>
@@ -59,6 +59,7 @@ export default {
                 },
                 on:{
                   click:()=>{
+                    this.$store.state.bookPlace = params.row.bookName
                     this.$router.push({ path: '/products/orderbook'})
                   }
                 }
@@ -67,13 +68,7 @@ export default {
           }
         }
       ],
-      booksData:[
-        {
-          bookName:"Cu1109",
-          buyPrice:109,
-          sellPrice:120
-        }
-      ]
+
     }
   }
 }
