@@ -60,7 +60,7 @@
             </Row>
             <Row>
               <Col span="11" class="orderCell">
-                {{instrument_name}}
+                {{this.$store.state.book.bookName}}
               </Col>
               <Col span="11" class="orderCell" style="padding-left:0px">
                 <button @click="changeSide" style="padding-left:10px;border-left:none;border-style:none;background-color:#fff;width:100%;text-align:left;height:100%;">
@@ -73,7 +73,7 @@
                 Broker
               </Col>
               <Col span="19" class="orderCell" style="border-left:0px;">
-                {{broker_name}}
+                {{this.$store.state.broker.name}}
               </Col>
             </Row>
             <Row>
@@ -110,7 +110,7 @@
             </Row>
             <Row>
               <Col span="11" class="orderCell">
-                {{instrument_name}}
+                {{this.$store.state.book.bookName}}
               </Col>
               <Col span="11" class="orderCell" style="padding-left:0px">
                 <button @click="changeSide" style="padding-left:10px;border-left:none;border-style:none;background-color:#fff;width:100%;text-align:left;height:100%;">
@@ -123,7 +123,7 @@
                 Broker
               </Col>
               <Col span="19" class="orderCell" style="border-left:0px;">
-                {{broker_name}}
+                {{this.$store.state.broker.name}}
               </Col>
             </Row>
             <Row>
@@ -166,7 +166,7 @@
             </Row>
             <Row>
               <Col span="11" class="orderCell">
-                {{instrument_name}}
+                {{this.$store.state.book.bookName}}
               </Col>
               <Col span="11" class="orderCell" style="padding-left:0px">
                 <button @click="changeSide" style="padding-left:10px;border-left:none;border-style:none;background-color:#fff;width:100%;text-align:left;height:100%;">
@@ -179,7 +179,7 @@
                 Broker
               </Col>
               <Col span="19" class="orderCell" style="border-left:0px;">
-                {{broker_name}}
+                {{this.$store.state.broker.name}}
               </Col>
             </Row>
             <Row>
@@ -233,7 +233,7 @@
                 Broker
               </Col>
               <Col span="19" class="orderCell" style="border-left:0px;">
-                {{broker_name}}
+                {{this.$store.state.broker.name}}
               </Col>
             </Row>
             <Row>
@@ -261,16 +261,12 @@ export default {
   data () {
     return {
 
-      trader_id:1,
       instrument_id:1,
-      broker_id:1,
       side:"buy",
       qty:0,
       price:0,
       orderId:"",
       currentTab:"market",
-      instrument_name:"Sep15 Gold",
-      broker_name:"M",
       confirm:false,
     }
   },

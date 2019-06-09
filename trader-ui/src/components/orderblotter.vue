@@ -127,7 +127,12 @@ export default {
   name: 'orderblotter',
   data(){
     return{
-      
+
+    }
+  },
+  computed:{
+    trades(){
+      return this.$store.state.trades
     }
   }
 }

@@ -5,7 +5,7 @@
         <div class="product-title">
           上市品种
         </div>
-        <Menu style="width:150px" :active-name="product.id">
+        <Menu style="width:150px" :active-name="this.$store.state.product.id" @on-select="productSelect">
           <MenuItem v-for="(item,index) in this.$store.state.products" :key="index" :name="item.id">
             <span>{{item.name}}</span>
           </MenuItem>
@@ -13,10 +13,10 @@
       </Sider>
       <Layout :style="{marginLeft: '150px'}">
         <Header class="header">
-          <Select style="width:200px" :placeholder="brokerPlace" @on-change="changeBroker" filterable>
+          <Select style="width:200px" :placeholder="this.$store.state.broker.name" @on-change="changeBroker" filterable>
               <Option v-for="item in this.$store.state.brokers" :value="item.id" :key="item.id">{{ item.name }}</Option>
           </Select>
-          <Select  v-if="orderbooksPage==false" style="width:200px;margin-left:50px" :placeholder="this.$store.state.bookPlace" @on-change="changeBook" filterable>
+          <Select  v-if="orderbooksPage==false" style="width:200px;margin-left:50px" :placeholder="this.$store.state.book.bookName" @on-change="changeBook" filterable>
               <Option v-for="item in this.$store.state.booksData" :value="item.id" :key="item.id">{{ item.bookName }}</Option>
           </Select>
         </Header>
@@ -33,19 +33,15 @@ export default {
   name: 'products',
   data () {
     return {
-      product:{},
-      broker:{},
-      book:{},
-      brokerPlace:"",
     }
   },
   methods:{
     changeBroker(e){
       for (var i=0;i<this.$store.state.brokers.length;i++){
         if(this.$store.state.brokers[i].id===e){
-          this.broker = this.$store.state.brokers[i]
+          this.$store.state.broker = this.$store.state.brokers[i]
           if(this.$route.path.slice(1).split("/")[1] !=='orderbooks'){
-            
+
           }
           return
         }
@@ -54,11 +50,19 @@ export default {
     changeBook(e){
       for (var i=0;i<this.$store.state.booksData.length;i++){
         if(this.$store.state.booksData[i].id===e){
-          this.book = this.$store.state.booksData[i]
+          this.$store.state.book = this.$store.state.booksData[i]
           return
         }
       }
     },
+    productSelect(productId){
+      for (var i=0;i<this.$store.state.products.length;i++){
+        if(this.$store.state.products[i].id===productId){
+          this.$store.state.product = this.$store.state.products[i]
+          return
+        }
+      }
+    }
   },
   computed:{
     orderbooksPage(){
@@ -69,10 +73,9 @@ export default {
     }
   },
   mounted(){
-    this.product = this.$store.state.products[0]
-    this.broker = this.$store.state.brokers[0]
-    this.brokerPlace = this.broker.name
-    this.$store.state.bookPlace = this.$store.state.booksData[0].bookName
+    this.$store.state.product = this.$store.state.products[0]
+    this.$store.state.broker = this.$store.state.brokers[0]
+    this.$store.state.book = this.$store.state.booksData[0]
   }
 }
 </script>
