@@ -40,9 +40,29 @@ export default {
       for (var i=0;i<this.$store.state.brokers.length;i++){
         if(this.$store.state.brokers[i].id===e){
           this.$store.state.broker = this.$store.state.brokers[i]
-          if(this.$route.path.slice(1).split("/")[1] !=='orderbooks'){
-
-          }
+          this.$axios({
+            method:'post',
+            url:this.$store.state.port+"/changeBroker",
+            data:{
+              brokerId : e,
+            },
+            transformRequest:function(obj) {
+        　　　var str = [];
+        　　　for ( var p in obj) {
+        　　　　str.push(encodeURIComponent(p) + "="
+        　　　　+ encodeURIComponent(obj[p]));
+        　　　}
+        　　　return str.join("&");
+        　　}
+          }).then((response)=>{
+            console.log(response)
+            this.$store.state.booksData = response.data.booksData
+            if(this.$route.path.slice(1).split("/")[1]==='orderbook'){
+              this.$router.push("/products/orderbooks")
+            }
+          }).catch((error)=>{
+            console.log(error)
+          })
           return
         }
       }
@@ -51,6 +71,27 @@ export default {
       for (var i=0;i<this.$store.state.booksData.length;i++){
         if(this.$store.state.booksData[i].id===e){
           this.$store.state.book = this.$store.state.booksData[i]
+          this.$axios({
+            method:'post',
+            url:this.$store.state.port+"/changeBook",
+            data:{
+              bookId : e,
+            },
+            transformRequest:function(obj) {
+        　　　var str = [];
+        　　　for ( var p in obj) {
+        　　　　str.push(encodeURIComponent(p) + "="
+        　　　　+ encodeURIComponent(obj[p]));
+        　　　}
+        　　　return str.join("&");
+        　　}
+          }).then((response)=>{
+            console.log(response)
+            this.$store.state.sells = response.data.sells
+            this.$store.state.buys = response.data.buys
+          }).catch((error)=>{
+            console.log(error)
+          })
           return
         }
       }
@@ -59,6 +100,31 @@ export default {
       for (var i=0;i<this.$store.state.products.length;i++){
         if(this.$store.state.products[i].id===productId){
           this.$store.state.product = this.$store.state.products[i]
+          this.$axios({
+            method:'post',
+            url:this.$store.state.port+"/changeProduct",
+            data:{
+              productId : productId,
+            },
+            transformRequest:function(obj) {
+      　　　　var str = [];
+      　　　　for ( var p in obj) {
+      　　　　　str.push(encodeURIComponent(p) + "="
+      　　　　　+ encodeURIComponent(obj[p]));
+      　　　　}
+      　　　　return str.join("&");
+      　　　}
+          }).then((response)=>{
+            console.log(response)
+            this.$store.state.brokers = response.data.brokers
+            this.$store.state.booksData = response.data.booksData
+            this.$store.state.broker = this.$store.state.brokers[0]
+            if(this.$route.path.slice(1).split("/")[1]==='orderbook'){
+              this.$router.push("/products/orderbooks")
+            }
+          }).catch((error)=>{
+            console.log(error)
+          })
           return
         }
       }
@@ -73,9 +139,7 @@ export default {
     }
   },
   mounted(){
-    this.$store.state.product = this.$store.state.products[0]
-    this.$store.state.broker = this.$store.state.brokers[0]
-    this.$store.state.book = this.$store.state.booksData[0]
+
   }
 }
 </script>
