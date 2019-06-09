@@ -3,9 +3,11 @@ export default{
     id:"",
     name:"未登录",
     avatar:"https://cbu01.alicdn.com/img/ibank/2012/008/444/662444800_995212887.jpg",
-    role:"broker"
+    role:"trader"
   },
-  bookPlace:"",
+  book:{},
+  broker:{},
+  product:{},
   products:[
     {
       id:0,
