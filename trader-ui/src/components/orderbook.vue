@@ -51,7 +51,7 @@
         </Row>
       </Col>
       <Col span="12" offset="1">
-        <Tabs v-model="currentTab" @on-click="currentTabChanged" type="card">
+        <Tabs v-if="this.$store.state.user.role=='trader'" v-model="currentTab" @on-click="currentTabChanged" type="card">
           <TabPane label="Market Order" name="market">
             <Row>
               <Col span="22" class="orderCell onTop" >
@@ -60,7 +60,7 @@
             </Row>
             <Row>
               <Col span="11" class="orderCell">
-                {{instrument_name}}
+                {{this.$store.state.book.bookName}}
               </Col>
               <Col span="11" class="orderCell" style="padding-left:0px">
                 <button @click="changeSide" style="padding-left:10px;border-left:none;border-style:none;background-color:#fff;width:100%;text-align:left;height:100%;">
@@ -73,7 +73,7 @@
                 Broker
               </Col>
               <Col span="19" class="orderCell" style="border-left:0px;">
-                {{broker_name}}
+                {{this.$store.state.broker.name}}
               </Col>
             </Row>
             <Row>
@@ -110,7 +110,7 @@
             </Row>
             <Row>
               <Col span="11" class="orderCell">
-                {{instrument_name}}
+                {{this.$store.state.book.bookName}}
               </Col>
               <Col span="11" class="orderCell" style="padding-left:0px">
                 <button @click="changeSide" style="padding-left:10px;border-left:none;border-style:none;background-color:#fff;width:100%;text-align:left;height:100%;">
@@ -123,7 +123,7 @@
                 Broker
               </Col>
               <Col span="19" class="orderCell" style="border-left:0px;">
-                {{broker_name}}
+                {{this.$store.state.broker.name}}
               </Col>
             </Row>
             <Row>
@@ -166,7 +166,7 @@
             </Row>
             <Row>
               <Col span="11" class="orderCell">
-                {{instrument_name}}
+                {{this.$store.state.book.bookName}}
               </Col>
               <Col span="11" class="orderCell" style="padding-left:0px">
                 <button @click="changeSide" style="padding-left:10px;border-left:none;border-style:none;background-color:#fff;width:100%;text-align:left;height:100%;">
@@ -179,7 +179,7 @@
                 Broker
               </Col>
               <Col span="19" class="orderCell" style="border-left:0px;">
-                {{broker_name}}
+                {{this.$store.state.broker.name}}
               </Col>
             </Row>
             <Row>
@@ -233,7 +233,7 @@
                 Broker
               </Col>
               <Col span="19" class="orderCell" style="border-left:0px;">
-                {{broker_name}}
+                {{this.$store.state.broker.name}}
               </Col>
             </Row>
             <Row>
@@ -260,60 +260,13 @@ export default {
   name: 'result',
   data () {
     return {
-      sells:[
-        {
-          price:1250,
-          vol:50
-        },
-        {
-          price:1260,
-          vol:60
-        },
-        {
-          price:1270,
-          vol:70
-        },
-        {
-          price:1280,
-          vol:80
-        },
-        {
-          price:1290,
-          vol:90
-        },
-        {
-          price:1300,
-          vol:100
-        }
-      ],
-      buys:[
-        {
-          price:1240,
-          vol:140
-        },
-        {
-          price:1230,
-          vol:130
-        },
-        {
-          price:1220,
-          vol:120
-        },
-        {
-          price:1210,
-          vol:110
-        }
-      ],
-      trader_id:1,
+
       instrument_id:1,
-      broker_id:1,
       side:"buy",
       qty:0,
       price:0,
       orderId:"",
       currentTab:"market",
-      instrument_name:"Sep15 Gold",
-      broker_name:"M",
       confirm:false,
     }
   },
@@ -344,15 +297,15 @@ export default {
   computed:{
     sellList:function(){
       var sellList = []
-      for(var i=0; i<this.sells.length && i!=5;i++){
-        sellList.push(this.sells[i])
+      for(var i=0; i<this.$store.state.sells.length && i!=5;i++){
+        sellList.push(this.$store.state.sells[i])
       }
       return sellList.reverse()
     },
     buyList:function(){
       var buyList = []
-      for(var i=0; i<this.buys.length && i!=5;i++){
-        buyList.push(this.buys[i])
+      for(var i=0; i<this.$store.state.buys.length && i!=5;i++){
+        buyList.push(this.$store.state.buys[i])
       }
       return buyList
     }
@@ -405,7 +358,7 @@ export default {
 }
 
 .onTop{
-  margin-top:12px;
+  <!--margin-top:12px;-->
   background-color:#5599ff;
   font-weight:600
 }

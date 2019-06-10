@@ -5,25 +5,20 @@
         <div class="product-title">
           上市品种
         </div>
-        <Menu style="width:150px" :active-name="products[0].id">
-          <MenuItem v-for="(product,index) in products" :key="index" :name="product.id">
-            <span>{{product.name}}</span>
+        <Menu style="width:150px" :active-name="this.$store.state.product.id" @on-select="productSelect">
+          <MenuItem v-for="(item,index) in this.$store.state.products" :key="index" :name="item.id">
+            <span>{{item.name}}</span>
           </MenuItem>
         </Menu>
       </Sider>
       <Layout :style="{marginLeft: '150px'}">
         <Header class="header">
-          <Dropdown  placement="bottom-start">
-            <a href="javascript:void(0)">
-              broker
-              <Icon type="ios-arrow-down"></Icon>
-            </a>
-            <DropdownMenu slot="list">
-              <DropdownItem  v-for="(broker,index) in brokers" :key="index">
-                {{broker.name}}
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
+          <Select style="width:200px" :placeholder="this.$store.state.broker.name" @on-change="changeBroker" filterable>
+              <Option v-for="item in this.$store.state.brokers" :value="item.id" :key="item.id">{{ item.name }}</Option>
+          </Select>
+          <Select  v-if="orderbooksPage==false" style="width:200px;margin-left:50px" :placeholder="this.$store.state.book.bookName" @on-change="changeBook" filterable>
+              <Option v-for="item in this.$store.state.booksData" :value="item.id" :key="item.id">{{ item.bookName }}</Option>
+          </Select>
         </Header>
         <Content>
           <router-view/>
@@ -38,92 +33,49 @@ export default {
   name: 'products',
   data () {
     return {
-      products:[
-        {
-          id:0,
-          name:"铜"
-        },
-        {
-          id:1,
-          name:"铝"
-        },
-        {
-          id:2,
-          name:"锌"
-        },
-        {
-          id:3,
-          name:"铅"
-        },
-        {
-          id:4,
-          name:"镍"
-        },
-        {
-          id:5,
-          name:"铜"
-        },
-        {
-          id:6,
-          name:"铝"
-        },
-        {
-          id:7,
-          name:"锌"
-        },
-        {
-          id:8,
-          name:"铅"
-        },
-        {
-          id:9,
-          name:"镍"
-        },
-        {
-          id:10,
-          name:"铜"
-        },
-        {
-          id:11,
-          name:"铝"
-        },
-        {
-          id:12,
-          name:"锌"
-        },
-        {
-          id:13,
-          name:"铅"
-        },
-        {
-          id:14,
-          name:"镍"
-        }
-      ],
-      brokers:[
-        {
-          id:0,
-          name:"Broker M"
-        },
-        {
-          id:1,
-          name:"Broker W"
-        },
-        {
-          id:2,
-          name:"Broker S"
-        },
-        {
-          id:3,
-          name:"Broker G"
-        },
-      ]
     }
   },
   methods:{
+    changeBroker(e){
+      for (var i=0;i<this.$store.state.brokers.length;i++){
+        if(this.$store.state.brokers[i].id===e){
+          this.$store.state.broker = this.$store.state.brokers[i]
+          if(this.$route.path.slice(1).split("/")[1] !=='orderbooks'){
 
+          }
+          return
+        }
+      }
+    },
+    changeBook(e){
+      for (var i=0;i<this.$store.state.booksData.length;i++){
+        if(this.$store.state.booksData[i].id===e){
+          this.$store.state.book = this.$store.state.booksData[i]
+          return
+        }
+      }
+    },
+    productSelect(productId){
+      for (var i=0;i<this.$store.state.products.length;i++){
+        if(this.$store.state.products[i].id===productId){
+          this.$store.state.product = this.$store.state.products[i]
+          return
+        }
+      }
+    }
+  },
+  computed:{
+    orderbooksPage(){
+      if(this.$route.path.slice(1).split("/")[1]==='orderbooks'){
+        return true
+      }
+      return false
+    }
   },
   mounted(){
+    this.$store.state.product = this.$store.state.products[0]
+    this.$store.state.broker = this.$store.state.brokers[0]
+    this.$store.state.book = this.$store.state.booksData[0]
   }
 }
 </script>

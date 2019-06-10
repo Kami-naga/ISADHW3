@@ -4,6 +4,8 @@ import operatingBoard from '@/components/OperatingBoard'
 import products from '@/components/products'
 import orderbooks from '@/components/orderbooks'
 import orderbook from '@/components/orderbook'
+import test from '@/components/test'
+import orderblotter from '@/components/orderblotter'
 
 Vue.use(Router)
 
@@ -12,6 +14,10 @@ export default new Router({
     {
       path: '/',
       redirect:'products'
+    },
+    {
+      path: '/test',
+      component: test,
     },
     {
       path:'/products',
@@ -32,6 +38,11 @@ export default new Router({
           component: orderbook
         },
       ]
+    },
+    {
+      path:'/orderblotter',
+      name:'orderblotter',
+      component:orderblotter
     }
   ]
 })
