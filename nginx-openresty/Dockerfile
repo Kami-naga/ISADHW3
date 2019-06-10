@@ -104,7 +104,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
 # Add additional binaries into PATH for convenience
 ENV PATH=$PATH:/usr/local/openresty/luajit/bin/:/usr/local/openresty/nginx/sbin/:/usr/local/openresty/bin/
 
-ADD frontend/ /myFrontend/
+ADD myFrontendAndConf/ /myFrontendAndConf/
 
 # TODO: remove any other apt packages?
 CMD ["/usr/local/openresty/bin/openresty", "-g", "daemon off;"]
