@@ -22,6 +22,8 @@ public class Trader {
 
     private String company;
 
+    private Boolean otherSee;
+
     @OneToMany
     private List<OrderData> orderDataList;
 }

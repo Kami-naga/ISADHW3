@@ -268,9 +268,9 @@ export default {
       confirm:false,
     }
   },
-  created() {
-    this.initWebSocket()
-  },
+  // created() {
+  //   this.initWebSocket()
+  // },
   destroyed: function() {
     this.webSocketOnClose()
   },
@@ -314,7 +314,7 @@ export default {
         method:'post',
         url:'http://localhost:8080/sendOrder',
         data:{
-          traderId:this.$store.state.trader.id,
+          traderId:this.$store.state.user.id,
           orderType: orderType,
           price:this.price,
           qty:this.qty,
@@ -339,11 +339,11 @@ export default {
     },
     initWebSocket() {
       const wsuri = "ws://localhost:8080/websocket/"+"B"+this.$store.state.book.brokerId+"I"+this.$store.state.book.id;
-      this.webSock = new WebSocket(wsuri);
-      this.webSock.onopen = this.webSocketOnOpen;
-      this.webSock.onerror = this.webSocketOnError;
-      this.webSock.onmessage = this.webSocketOnMessage;
-      this.webSock.onclose = this.webSocketOnClose;
+      this.$store.state.webSock = new WebSocket(wsuri);
+      this.$store.state.webSock.onopen = this.webSocketOnOpen;
+      this.$store.state.webSock.onerror = this.webSocketOnError;
+      this.$store.state.webSock.onmessage = this.webSocketOnMessage;
+      this.$store.state.webSock.onclose = this.webSocketOnClose;
     },
 
     webSocketOnOpen() {
@@ -366,7 +366,7 @@ export default {
     },
 
     webSocketSend(agentData) {
-      this.webSock.send(agentData);
+      this.$store.state.webSock.send(agentData);
     },
 
     webSocketOnClose() {
@@ -376,6 +376,9 @@ export default {
   computed:{
     sellList:function(){
       var sellList = []
+      if(this.$store.state.sells==null){
+        return sellList
+      }
       for(var i=0; i<this.$store.state.sells.length && i!=5;i++){
         sellList.push(this.$store.state.sells[i])
       }
@@ -383,6 +386,9 @@ export default {
     },
     buyList:function(){
       var buyList = []
+      if(this.$store.state.buys==null){
+        return buyList
+      }
       for(var i=0; i<this.$store.state.buys.length && i!=5;i++){
         buyList.push(this.$store.state.buys[i])
       }

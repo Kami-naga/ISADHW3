@@ -2,6 +2,7 @@ package com.eis.trader.service.impl;
 
 import com.eis.trader.domain.Instrument;
 import com.eis.trader.domain.Product;
+import com.eis.trader.repository.InstrumentRepository;
 import com.eis.trader.repository.ProductRepository;
 import com.eis.trader.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +18,20 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private InstrumentRepository instrumentRepository;
 
     @Override
     public void addInstrument(Instrument instrument) {
         Long productId = instrument.getProduct().getProductId();
-        Product product = productRepository.findById(productId).orElse(null);
-        if (product == null)
-            return;
-        List<Instrument> instrumentList = product.getInstruments();
-        instrumentList.add(instrument);
-        product.setInstruments(instrumentList);
-        productRepository.save(product);
+//        Product product = productRepository.findById(productId).orElse(null);
+//        if (product == null)
+//            return;
+//        List<Instrument> instrumentList = product.getInstruments();
+//        instrumentList.add(instrument);
+//        product.setInstruments(instrumentList);
+//        productRepository.save(product);
+        instrumentRepository.save(instrument);
     }
 
     @Override

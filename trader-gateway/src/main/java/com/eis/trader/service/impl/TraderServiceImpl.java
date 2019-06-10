@@ -9,8 +9,4 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TraderServiceImpl implements TraderService {
-    @Override
-    public Trader login(String name, String pwd) {
-        return null;
-    }
 }

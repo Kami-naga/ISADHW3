@@ -35,7 +35,7 @@ public class Receiver {
         OrderbookVO orderbookVO = ProtostuffUtils.deserialize(data, OrderbookVO.class);
         log.info(orderbookVO.toString());
         redisConnection.set((orderbookVO.getOrderbookId()+"T").getBytes(), SerializeUtil.serialize(orderbookVO));
-        WebSocketServer.sendInfo(JSONObject.toJSONString(orderbookVO), orderbookVO.getOrderbookId());
+        WebSocketServer.sendInfo(JSONObject.toJSONString(orderbookVO), null);
     }
 
     @RabbitListener(queues = "instrument")

@@ -44,7 +44,7 @@
       <Col span="6"  style="border-right:2px solid black">
         <Row>
           <Col span="24" class="titleSubCell" style="border-top:2px solid black">
-            Initiator
+            Completion
           </Col>
         </Row>
         <Row>
@@ -67,7 +67,7 @@
 
     <Row v-for="(trade,index) in this.$store.state.trades" :key="trade.trade_id">
       <Col span="2" class="contentCell" style="border-left:2px solid black" v-bind:class="{ 'contentBottom': index===trades.length-1}">
-        {{trade.trade_id}}
+        {{trade.tradeId}}
       </Col>
       <Col span="2" class="contentCell" v-bind:class="{ 'contentBottom': index===trades.length-1}">
         {{trade.broker}}
@@ -76,7 +76,7 @@
         {{trade.product}}
       </Col>
       <Col span="2" class="contentCell" v-bind:class="{ 'contentBottom': index===trades.length-1}">
-        {{trade.period}}
+        {{trade.periodT}}
       </Col>
       <Col span="2" class="contentCell" v-bind:class="{ 'contentBottom': index===trades.length-1}">
         {{trade.price}}
@@ -89,13 +89,13 @@
           <Col span="24">
             <Row>
               <Col span="10" class="contentSubCell" v-bind:class="{ 'contentBottom': index===trades.length-1}">
-                {{trade.initiator.trader}}
+                {{trade.initiator.otherSee==false&&trade.initiator.id!=userId?"":trade.initiator.name}}
               </Col>
               <Col span="10" class="contentSubCell" v-bind:class="{ 'contentBottom': index===trades.length-1}">
-                {{trade.initiator.company}}
+                {{trade.initiator.otherSee==false&&trade.initiator.id!=userId?"":trade.initiator.company}}
               </Col>
               <Col span="4" class="contentSubCell" v-bind:class="{ 'contentBottom': index===trades.length-1}">
-                {{trade.initiator.side}}
+                {{trade.initiator.orderSide}}
               </Col>
             </Row>
           </Col>
@@ -106,13 +106,13 @@
           <Col span="24">
             <Row>
               <Col span="10" class="contentSubCell" v-bind:class="{ 'contentBottom': index===trades.length-1}">
-                {{trade.completion.trader}}
+                {{trade.completion.otherSee==false&&trade.completion.id!=userId?"":trade.completion.name}}
               </Col>
               <Col span="10" class="contentSubCell" v-bind:class="{ 'contentBottom': index===trades.length-1}">
-                {{trade.completion.company}}
+                {{trade.completion.otherSee==false&&trade.completion.id!=userId?"":trade.completion.company}}
               </Col>
               <Col span="4" class="contentSubCell" v-bind:class="{ 'contentBottom': index===trades.length-1}">
-                {{trade.completion.side}}
+                {{trade.completion.orderSide}}
               </Col>
             </Row>
           </Col>
@@ -130,9 +130,25 @@ export default {
 
     }
   },
+  mounted() {
+    this.$axios({
+      method: "get",
+      url: this.$store.state.port2 + "/api/trade/all",
+    })
+      .then(response => {
+        this.$store.state.trades = response.data
+        console.log(response.data)
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  },
   computed:{
     trades(){
       return this.$store.state.trades
+    },
+    userId(){
+      return this.$store.state.user.id
     }
   }
 }

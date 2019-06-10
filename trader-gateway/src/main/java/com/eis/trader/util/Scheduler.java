@@ -26,6 +26,7 @@ public class Scheduler {
     @Autowired
     private OrderService orderService;
 
+
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     @Scheduled(fixedRate = 10000)
@@ -37,7 +38,9 @@ public class Scheduler {
     public void orderMock() {
         Random rand =new Random();
         OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setBookId("B1I1");
+        if (WebSocketServer.getSid().equals(""))
+            return;
+        orderDTO.setBookId(WebSocketServer.getSid());
         orderDTO.setPrice(rand.nextInt(500)+500);
         orderDTO.setQty(rand.nextInt(500)+500);
         orderDTO.setInstrumentId(1L);

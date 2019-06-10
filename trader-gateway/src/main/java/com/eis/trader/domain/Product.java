@@ -6,12 +6,13 @@ package com.eis.trader.domain;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Data
-public class Product {
+public class Product implements Serializable {
 
     @Id
     @GeneratedValue
@@ -19,7 +20,7 @@ public class Product {
 
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     private List<Instrument> instruments;
 
     private String imgUrl;

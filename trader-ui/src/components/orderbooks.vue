@@ -10,6 +10,43 @@
 <script>
 export default {
   name: 'result',
+  methods: {
+    initWebSocket() {
+      const wsuri = "ws://localhost:8080/websocket/"+"B"+this.$store.state.book.brokerId+"I"+this.$store.state.book.id;
+      this.$store.state.webSock = new WebSocket(wsuri);
+      this.$store.state.webSock.onopen = this.webSocketOnOpen;
+      this.$store.state.webSock.onerror = this.webSocketOnError;
+      this.$store.state.webSock.onmessage = this.webSocketOnMessage;
+      this.$store.state.webSock.onclose = this.webSocketOnClose;
+    },
+
+    webSocketOnOpen() {
+      console.log("连接成功");
+    },
+
+    webSocketOnError() {
+      console.log("连接发生错误");
+    },
+
+    webSocketOnMessage(e) {
+      console.log(e.data)
+      const temp = JSON.parse(""+e.data)
+      this.orderBook = temp
+      this.buys = temp.buysFive
+      this.sells = temp.sellsFive
+      this.orderBookId = temp.orderbookId
+      this.$store.state.buys = temp.buysFive
+      this.$store.state.sells = temp.sellsFive
+    },
+
+    webSocketSend(agentData) {
+      this.$store.state.webSock.send(agentData);
+    },
+
+    webSocketOnClose() {
+      console.log("连接关闭");
+    }
+  },
   data () {
     return {
       booksForm:[
@@ -80,10 +117,12 @@ export default {
                           console.log(response)
                           this.$store.state.sells = response.data.sellsFive
                           this.$store.state.buys = response.data.buysFive
+                          this.webSocketOnClose();
+                          this.initWebSocket();
                           this.$router.push({ path: '/products/orderbook'})
+
                         }).catch((error)=>{
                           console.log(error)
-                          this.$router.push({ path: '/products/orderbook'})
                         })
                         return
                       }

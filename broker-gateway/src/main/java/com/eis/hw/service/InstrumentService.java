@@ -7,4 +7,6 @@ import com.eis.hw.model.entity.Instrument;
  */
 public interface InstrumentService {
     void publishInstrument(Instrument instrument);
+
+    void addInstrument(Long productId, Long brokerId, String periodT);
 }

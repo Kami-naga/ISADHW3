@@ -41,4 +41,13 @@ public class InstrumentServiceImpl implements InstrumentService {
     public List<Instrument> findInstrumentsByProductIdAndBrokerId(Long productId, Long brokerId) {
         return instrumentRepository.findAllByProductAndBroker(productRepository.findById(productId).orElse(null),brokerRepository.findById(brokerId).orElse(null));
     }
+
+    @Override
+    public void addInstrument(Long productId, Long brokerId, String periodT) {
+        Instrument instrument = new Instrument();
+        instrument.setProduct(productRepository.findById(productId).orElse(null));
+        instrument.setBroker(brokerRepository.findById(brokerId).orElse(null));
+        instrument.setPeriodT(periodT);
+        instrumentRepository.save(instrument);
+    }
 }

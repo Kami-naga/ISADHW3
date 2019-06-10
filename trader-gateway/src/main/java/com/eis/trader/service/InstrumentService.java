@@ -12,4 +12,5 @@ public interface InstrumentService {
     List<Instrument> findInstrumentsByProductId(Long productId);
     List<Instrument> findInstrumentsByBroker(Broker broker);
     List<Instrument> findInstrumentsByProductIdAndBrokerId(Long productId, Long brokerId);
+    void addInstrument(Long productId, Long brokerId, String periodT);
 }

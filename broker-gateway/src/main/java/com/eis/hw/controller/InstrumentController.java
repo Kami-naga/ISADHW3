@@ -31,4 +31,9 @@ public class InstrumentController {
         productService.addInstrument(instrument);
         instrumentService.publishInstrument(instrument);
     }
+
+    @PostMapping("/addInstrument")
+    public void addInstrument(Long productId, Long brokerId, String periodT) {
+        instrumentService.addInstrument(productId, brokerId, periodT);
+    }
 }

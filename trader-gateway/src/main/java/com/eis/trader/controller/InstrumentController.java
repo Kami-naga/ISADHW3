@@ -33,4 +33,10 @@ public class InstrumentController {
     public List<Instrument> getInstrumentByProductAndBroker(Long productId, Long brokerId) {
         return instrumentService.findInstrumentsByProductIdAndBrokerId(productId, brokerId);
     }
+
+    @PostMapping("/addInstrument")
+    @ResponseBody
+    public void addInstrument(Long productId, Long brokerId, String periodT) {
+        instrumentService.addInstrument(productId, brokerId, periodT);
+    }
 }

@@ -21,6 +21,7 @@ public interface ROrderbookService {
     int cancel(Long orderId);
     boolean transferOrder(byte[] data);
     void publishOrderBook(String bookId);
+    void createOrderBook(String bookId);
 
     List<OrderNodeVO> getBuyFive(ROrderbook rOrderbook);
     List<OrderNodeVO> getSellFive(ROrderbook rOrderbook);
