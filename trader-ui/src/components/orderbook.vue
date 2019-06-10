@@ -89,6 +89,11 @@
                 <Checkbox style="width:100%;font-size:20px" size="large" v-model="confirm">&#160;I confirm the trade is correct</Checkbox>
               </Col>
             </Row>
+            <Row v-if="this.qty>=1000">
+              <Col span="22" class="orderCell" style="display:flex;align-items:center;">
+                <Checkbox style="width:100%;font-size:20px" size="large" v-model="ice">&#160;选择分发订单</Checkbox>
+              </Col>
+            </Row>
             <Row>
               <Col span="11" class="orderCell" style="padding-left:0px">
                 <button @click="ok" style="padding-left:10px;border-left:none;border-style:none;background-color:#fff;width:100%;text-align:left;height:100%;">
@@ -145,6 +150,11 @@
                 <Checkbox style="width:100%;font-size:20px" size="large" v-model="confirm">&#160;I confirm the trade is correct</Checkbox>
               </Col>
             </Row>
+            <Row v-if="this.qty>=1000">
+              <Col span="22" class="orderCell" style="display:flex;align-items:center;">
+                <Checkbox style="width:100%;font-size:20px" size="large" v-model="ice">&#160;选择分发订单</Checkbox>
+              </Col>
+            </Row>
             <Row>
               <Col span="11" class="orderCell" style="padding-left:0px">
                 <button @click="ok" style="padding-left:10px;border-left:none;border-style:none;background-color:#fff;width:100%;text-align:left;height:100%;">
@@ -199,6 +209,11 @@
             <Row>
               <Col span="22" class="orderCell" style="display:flex;align-items:center;">
                 <Checkbox style="width:100%;font-size:20px" size="large" v-model="confirm">&#160;I confirm the trade is correct</Checkbox>
+              </Col>
+            </Row>
+            <Row v-if="this.qty>=1000">
+              <Col span="22" class="orderCell" style="display:flex;align-items:center;">
+                <Checkbox style="width:100%;font-size:20px" size="large" v-model="ice">&#160;选择分发订单</Checkbox>
               </Col>
             </Row>
             <Row>
@@ -266,6 +281,7 @@ export default {
       orderId:"",
       currentTab:"market",
       confirm:false,
+      ice:false
     }
   },
   // created() {
@@ -296,6 +312,8 @@ export default {
       this.confirm=false
     },
     ok(){
+      var date = new Date()
+      var timeSign = date.toLocaleString()
       let orderType = 0
       switch(this.currentTab){
         case "market":
@@ -310,25 +328,62 @@ export default {
         case "cancel":
           orderType = 4
       }
-      this.$axios({
-        method:'post',
-        url:'http://localhost:8080/sendOrder',
-        data:{
-          traderId:this.$store.state.user.id,
-          orderType: orderType,
-          price:this.price,
-          qty:this.qty,
-          orderSide:this.side=="buy"?0:1,
-          brokerId:this.$store.state.book.brokerId,
-          instrumentId:this.$store.state.book.id,
-          bookId: "B"+this.$store.state.book.brokerId+"I"+this.$store.state.book.id
-        },
-        headers: {
-          'Content-Type': 'application/json;'
-        }
-      }).catch((error)=>{
-        console.log(error)
-      })
+      if(this.ice){
+        this.mutiSend(orderType,timeSign,10,10)
+        return
+      }
+      else{
+        this.$axios({
+          method:'post',
+          url:'http://localhost:8080/sendOrder',
+          data:{
+            traderId:this.$store.state.user.id,
+            orderType: orderType,
+            price:this.price,
+            qty:this.qty,
+            orderSide:this.side=="buy"?0:1,
+            brokerId:this.$store.state.book.brokerId,
+            instrumentId:this.$store.state.book.id,
+            bookId: "B"+this.$store.state.book.brokerId+"I"+this.$store.state.book.id,
+            timeSign:timeSign
+          },
+          headers: {
+            'Content-Type': 'application/json;'
+          }
+        }).catch((error)=>{
+          console.log(error)
+        })
+      }
+    },
+    mutiSend(orderType,timeSign,num,constNum){
+      if(num>0){
+        setTimeout(()=>{
+          this.$axios({
+            method:'post',
+            url:'http://localhost:8080/sendOrder',
+            data:{
+              traderId:this.$store.state.user.id,
+              orderType: orderType,
+              price:this.price,
+              qty:parseInt(this.qty/constNum),
+              orderSide:this.side=="buy"?0:1,
+              brokerId:this.$store.state.book.brokerId,
+              instrumentId:this.$store.state.book.id,
+              bookId: "B"+this.$store.state.book.brokerId+"I"+this.$store.state.book.id,
+              timeSign:timeSign
+            },
+            headers: {
+              'Content-Type': 'application/json;'
+            }
+          }).catch((error)=>{
+            console.log(error)
+          })
+          this.mutiSend(orderType,timeSign,num-1,constNum)
+        },2000)
+      }
+      else{
+        return
+      }
     },
     cancel(){
       this.side="buy"
@@ -336,6 +391,9 @@ export default {
       this.price=0
       this.orderId=""
       this.confirm=false
+      /*var date = new Date()
+      var timeSign = date.getTime()
+      console.log(timeSign)*/
     },
     initWebSocket() {
       const wsuri = "ws://localhost:8080/websocket/"+"B"+this.$store.state.book.brokerId+"I"+this.$store.state.book.id;
