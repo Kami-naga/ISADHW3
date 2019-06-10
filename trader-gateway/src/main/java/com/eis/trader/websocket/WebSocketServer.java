@@ -31,7 +31,11 @@ public class WebSocketServer {
     private Session session;
 
     //接收sid
-    private String sid="";
+    private static String sid="";
+
+    public static String getSid() {
+        return sid;
+    }
     /**
      * 连接建立成功调用的方法*/
     @OnOpen

@@ -20,7 +20,7 @@ public class InstrumentForm {
 
     private Long productId;
 
-    private String period;
+    private String periodT;
 
     private OrderSide orderSide;
 

@@ -4,12 +4,13 @@ import lombok.Data;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Data
-public class Broker {
+public class Broker implements Serializable {
     @Id
     @GeneratedValue
     private Long brokerId;

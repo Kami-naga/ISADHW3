@@ -1,13 +1,18 @@
 export default{
+  port:"http://localhost:8080",
+  port2:"http://localhost:8083",
   user:{
     id:"",
     name:"未登录",
-    avatar:"https://cbu01.alicdn.com/img/ibank/2012/008/444/662444800_995212887.jpg",
-    role:"trader"
+    avatar:"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1560169046585&di=62529166adf2076c86f92ab4a785ed34&imgtype=0&src=http%3A%2F%2Fpic.51yuansu.com%2Fpic3%2Fcover%2F00%2F94%2F68%2F58dcd704b0803_610.jpg",
+    role:""
   },
   book:{},
   broker:{},
   product:{},
+  // trader:{
+  //   id: 1
+  // },
   products:[
     {
       id:0,
@@ -106,15 +111,11 @@ export default{
   booksData:[
     {
       id:0,
-      bookName:"Cu1109",
-      buyPrice:109,
-      sellPrice:120
+      bookName:"Cu1109"
     },
     {
       id:1,
-      bookName:"Cu1110",
-      buyPrice:109,
-      sellPrice:120
+      bookName:"Cu1110"
     },
   ],
   trades:[
@@ -126,14 +127,18 @@ export default{
       price:1245,
       qty:50,
       initiator:{
+        id: 1,
         trader:'Sam Wang',
         company:"ABC Corp",
-        side:"sell"
+        side:"sell",
+        otherSee: false
       },
       completion:{
+        id: 2,
         trader:"Sixian Liu",
         company:"MS",
-        side:"buy"
+        side:"buy",
+        otherSee: true
       }
     }
   ],

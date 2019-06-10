@@ -10,13 +10,49 @@
 <script>
 export default {
   name: 'result',
+  methods: {
+    initWebSocket() {
+      const wsuri = "ws://localhost:8080/websocket/"+"B"+this.$store.state.book.brokerId+"I"+this.$store.state.book.id;
+      this.$store.state.webSock = new WebSocket(wsuri);
+      this.$store.state.webSock.onopen = this.webSocketOnOpen;
+      this.$store.state.webSock.onerror = this.webSocketOnError;
+      this.$store.state.webSock.onmessage = this.webSocketOnMessage;
+      this.$store.state.webSock.onclose = this.webSocketOnClose;
+    },
+
+    webSocketOnOpen() {
+      console.log("连接成功");
+    },
+
+    webSocketOnError() {
+      console.log("连接发生错误");
+    },
+
+    webSocketOnMessage(e) {
+      console.log(e.data)
+      const temp = JSON.parse(""+e.data)
+      this.orderBook = temp
+      this.buys = temp.buysFive
+      this.sells = temp.sellsFive
+      this.orderBookId = temp.orderbookId
+      this.$store.state.buys = temp.buysFive
+      this.$store.state.sells = temp.sellsFive
+    },
+
+    webSocketSend(agentData) {
+      this.$store.state.webSock.send(agentData);
+    },
+
+    webSocketOnClose() {
+      console.log("连接关闭");
+    }
+  },
   data () {
     return {
       booksForm:[
         {
           title:'期货名称',
           key:'bookName',
-          width:'300px',
           align:'center',
           render:(h,params)=>{
             return h("div", [
@@ -33,7 +69,7 @@ export default {
             ])
           }
         },
-        {
+        /*{
           title:'卖出价',
           key:'sellPrice',
           align:'center'
@@ -42,11 +78,10 @@ export default {
           title:'买入价',
           key:'buyPrice',
           align:'center',
-        },
+        },*/
         {
           title:'操作',
           align: 'center',
-          width: '200px',
           render:(h,params)=>{
             return h('div',[
               h('Button',{
@@ -59,8 +94,39 @@ export default {
                 },
                 on:{
                   click:()=>{
-                    this.$store.state.bookPlace = params.row.bookName
-                    this.$router.push({ path: '/products/orderbook'})
+                    var bookId = params.row.id
+                    for (var i=0;i<this.$store.state.booksData.length;i++){
+                      if(this.$store.state.booksData[i].id===bookId){
+                        this.$store.state.book = this.$store.state.booksData[i]
+                        this.$axios({
+                          method:'post',
+                          url:this.$store.state.port+"/showDetail",
+                          data:{
+                            brokerId: this.$store.state.book.brokerId,
+                            instrumentId : bookId,
+                          },
+                          transformRequest:function(obj) {
+                      　　　var str = [];
+                      　　　for ( var p in obj) {
+                      　　　　str.push(encodeURIComponent(p) + "="
+                      　　　　+ encodeURIComponent(obj[p]));
+                      　　　}
+                      　　　return str.join("&");
+                      　　}
+                        }).then((response)=>{
+                          console.log(response)
+                          this.$store.state.sells = response.data.sellsFive
+                          this.$store.state.buys = response.data.buysFive
+                          this.webSocketOnClose();
+                          this.initWebSocket();
+                          this.$router.push({ path: '/products/orderbook'})
+
+                        }).catch((error)=>{
+                          console.log(error)
+                        })
+                        return
+                      }
+                    }
                   }
                 }
               },'查看')
