@@ -18,7 +18,7 @@ public class Trader {
 
     private String company;
 
-    private Byte otherSee;
+    private Boolean otherSee;
 
     @OneToMany
     private List<Orderitem> orderitems;

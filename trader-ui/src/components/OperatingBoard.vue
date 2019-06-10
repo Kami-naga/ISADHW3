@@ -183,32 +183,33 @@ export default {
       this.orderId=""
     },
     Ok(){
-      const baseurl = "http://localhost:8080";
       if(this.currentTab=="market"){
         this.$axios({
           method:'post',
-          dataType: 'json',
-          url: baseurl+"/sendOrder",
-          headers:{
-        	  'Content-Type':'application/json'
-          },
+          url:'http://localhost:8083/market',
           data:{
-            traderId:this.trader_id,
-            orderType: 0,
+            trader_id:this.trader_id,
             qty:this.qty,
-            orderSide:this.side=="buy"?0:1,
-            brokerId:this.broker_id,
-            bookId: "B"+this.broker_id+"I"+this.instrument_id,
-            instrumentId:this.instrument_id
+            side:this.side,
+            broker_id:this.broker_id,
+            instrument_id:this.instrument_id
           },
+          transformRequest:function(obj) {
+    　　　　var str = [];
+    　　　　for ( var p in obj) {
+    　　　　　str.push(encodeURIComponent(p) + "="
+    　　　　　+ encodeURIComponent(obj[p]));
+    　　　　}
+    　　　　return str.join("&");
+    　　　}
         }).then((response)=>{
 
           this.$axios({
             method:'post',
-            url: baseurl+"/showDetail",
+            url:'http://localhost:8083/showDetail',
             data:{
-              brokerId:this.broker_id,
-              instrumentId:this.instrument_id
+              broker_id:this.broker_id,
+              instrument_id:this.instrument_id
             },
             transformRequest:function(obj) {
       　　　　var str = [];
@@ -235,28 +236,31 @@ export default {
       else if(this.currentTab=="limit"){
         this.$axios({
           method:'post',
-          url:baseurl+"/sendOrder",
-          headers:{
-        	  'Content-Type':'application/json'
-          },
+          url:'http://localhost:8083/limit',
           data:{
-            traderId:this.trader_id,
-            orderType: 1,
-            price: this.price,
-            qty: this.qty,
-            orderSide:this.side=="buy"?0:1,
-            brokerId:this.broker_id,
-            bookId: "B"+this.broker_id+"I"+this.instrument_id,
-            instrumentId:this.instrument_id
+            trader_id:this.trader_id,
+            price:this.price,
+            qty:this.qty,
+            side:this.side,
+            broker_id:this.broker_id,
+            instrument_id:this.instrument_id
           },
+          transformRequest:function(obj) {
+        　　　　var str = [];
+        　　　　for ( var p in obj) {
+        　　　　　str.push(encodeURIComponent(p) + "="
+        　　　　　+ encodeURIComponent(obj[p]));
+        　　　　}
+        　　　　return str.join("&");
+        　　　}
         }).then((response)=>{
 
           this.$axios({
             method:'post',
-            url:baseurl+"/showDetail",
+            url:'http://localhost:8083/showDetail',
             data:{
-              brokerId:this.broker_id,
-              instrumentId:this.instrument_id
+              broker_id:this.broker_id,
+              instrument_id:this.instrument_id
             },
             transformRequest:function(obj) {
       　　　　var str = [];
@@ -284,28 +288,31 @@ export default {
       else if(this.currentTab=="stop"){
         this.$axios({
           method:'post',
-          url:baseurl+"/sendOrder",
-          headers:{
-        	  'Content-Type':'application/json'
-          },
+          url:'http://localhost:8083/stop',
           data:{
-            traderId:this.trader_id,
-            orderType: 2,
-            price: this.price,
-            qty: this.qty,
-            orderSide:this.side=="buy"?0:1,
-            brokerId:this.broker_id,
-            bookId: "B"+this.broker_id+"I"+this.instrument_id,
-            instrumentId:this.instrument_id
+            trader_id:this.trader_id,
+            stopPrice:this.price,
+            qty:this.qty,
+            side:this.side,
+            broker_id:this.broker_id,
+            instrument_id:this.instrument_id
           },
+          transformRequest:function(obj) {
+    　　　　var str = [];
+    　　　　for ( var p in obj) {
+    　　　　　str.push(encodeURIComponent(p) + "="
+    　　　　　+ encodeURIComponent(obj[p]));
+    　　　　}
+    　　　　return str.join("&");
+    　　　}
         }).then((response)=>{
 
           this.$axios({
             method:'post',
-            url:baseurl+"/showDetail",
+            url:'http://localhost:8083/showDetail',
             data:{
-              brokerId:this.broker_id,
-              instrumentId:this.instrument_id
+              broker_id:this.broker_id,
+              instrument_id:this.instrument_id
             },
             transformRequest:function(obj) {
       　　　　var str = [];
@@ -333,19 +340,27 @@ export default {
       else{
         this.$axios({
           method:'post',
-          url:baseurl+"/cancel",
+          url:'http://localhost:8083/cancel',
           data:{
             orderId:this.orderId,
             trader_id:this.trader_id
           },
+          transformRequest:function(obj) {
+    　　　　var str = [];
+    　　　　for ( var p in obj) {
+    　　　　　str.push(encodeURIComponent(p) + "="
+    　　　　　+ encodeURIComponent(obj[p]));
+    　　　　}
+    　　　　return str.join("&");
+    　　　}
         }).then((response)=>{
 
           this.$axios({
             method:'post',
-            url:baseurl+"/showDetail",
+            url:'http://localhost:8083/showDetail',
             data:{
-              brokerId:this.broker_id,
-              instrumentId:this.instrument_id
+              broker_id:this.broker_id,
+              instrument_id:this.instrument_id
             },
             transformRequest:function(obj) {
       　　　　var str = [];
@@ -804,10 +819,10 @@ export default {
   mounted(){
     this.$axios({
       method:'post',
-      url:"http://localhost:8080/showDetail",
+      url:'http://localhost:8083/showDetail',
       data:{
-        brokerId:this.broker_id,
-        instrumentId:this.instrument_id
+        broker_id:this.broker_id,
+        instrument_id:this.instrument_id
       },
       transformRequest:function(obj) {
 　　　　var str = [];
@@ -819,8 +834,8 @@ export default {
 　　　}
     }).then((response)=>{
       var tmp = response.data
-      console.log(JSON.stringify(tmp))
       this.construct(tmp)
+
 
     }).catch((error)=>{
       console.log(error)

@@ -15,6 +15,7 @@ import com.eis.hw.util.RedisUtils;
 import com.eis.hw.util.SerializeUtil;
 import com.eis.hw.vo.OrderNodeVO;
 import com.eis.hw.vo.OrderbookVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class ROrderbookServiceImpl implements ROrderbookService {
 
     private final ROrdernodeService rOrdernodeService;
@@ -62,17 +64,13 @@ public class ROrderbookServiceImpl implements ROrderbookService {
     @Override
     public void init() {
         List<Instrument> instruments = instrumentRepository.findAll();
-        System.out.println(instruments);
-        List<Broker> brokers = brokerRepository.findAll();
-        System.out.println(brokers);
-        for (Broker broker: brokers) {
-            for (Instrument instrument: instruments) {
-                String bookId = "B"+String.valueOf(broker.getBrokerId())+"I"+String.valueOf(instrument.getInstrumentId());
-                ROrderbook rOrderbook = new ROrderbook();
-                rOrderbook.setOrderBookId(bookId);
-                save(bookId, rOrderbook);
-                publishOrderBook(bookId);
-            }
+        for (Instrument instrument: instruments) {
+            Broker broker = instrument.getBroker();
+            String bookId = "B"+String.valueOf(broker.getBrokerId())+"I"+String.valueOf(instrument.getInstrumentId());
+            ROrderbook rOrderbook = new ROrderbook();
+            rOrderbook.setOrderBookId(bookId);
+            save(bookId, rOrderbook);
+            publishOrderBook(bookId);
         }
     }
 
@@ -766,6 +764,17 @@ public class ROrderbookServiceImpl implements ROrderbookService {
         orderbookVO.setBuysFive(getBuyFive(rOrderbook));
         orderbookVO.setSellsFive(getSellFive(rOrderbook));
         System.out.println(Arrays.toString(ProtostuffUtils.serialize(orderbookVO)));
+        transferOrder(ProtostuffUtils.serialize(orderbookVO));
+    }
+
+    @Override
+    public void createOrderBook(String bookId) {
+        ROrderbook rOrderbook = new ROrderbook();
+        rOrderbook.setOrderBookId(bookId);
+        save(bookId, rOrderbook);
+        OrderbookVO orderbookVO = new OrderbookVO();
+        orderbookVO.setOrderbookId(bookId);
+        log.info(orderbookVO.toString());
         transferOrder(ProtostuffUtils.serialize(orderbookVO));
     }
 

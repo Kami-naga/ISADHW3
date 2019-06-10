@@ -1,4 +1,4 @@
-package com.eis.trader.entity;
+package com.eis.trader.domain;
 
 import lombok.Data;
 

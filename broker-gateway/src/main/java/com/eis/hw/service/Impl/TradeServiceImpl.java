@@ -8,6 +8,7 @@ import com.eis.hw.service.TradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -36,5 +37,10 @@ public class TradeServiceImpl implements TradeService {
         }
         trade.setInitiatorBuy(buy);
         tradeRepository.save(trade);
+    }
+
+    @Override
+    public List<Trade> getAllTrades() {
+        return tradeRepository.findAll();
     }
 }

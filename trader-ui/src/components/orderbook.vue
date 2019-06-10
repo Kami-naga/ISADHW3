@@ -28,7 +28,7 @@
             {{node.price}}
           </Col>
           <Col span="6" class="bookCell sellCell">
-            {{node.vol}}
+            {{node.volumn}}
           </Col>
           <Col span="3" class="bookCell sellCell">
             {{sellList.length-index}}
@@ -39,7 +39,7 @@
             {{1+index}}
           </Col>
           <Col span="6" class="bookCell buyCell">
-            {{node.vol}}
+            {{node.volumn}}
           </Col>
           <Col span="6" class="bookCell buyPrice" v-bind:class="{ 'cursorCell': 1+index===1}">
             {{node.price}}
@@ -260,8 +260,6 @@ export default {
   name: 'result',
   data () {
     return {
-
-      instrument_id:1,
       side:"buy",
       qty:0,
       price:0,
@@ -269,6 +267,16 @@ export default {
       currentTab:"market",
       confirm:false,
     }
+  },
+  // created() {
+  //   this.initWebSocket()
+  // },
+  destroyed: function() {
+    this.webSocketOnClose()
+  },
+  mounted() {
+    this.brokerId = this.$store.state.book.brokerId
+    this.instrumentId = this.$store.state.book.id
   },
   methods:{
     changeSide(){
@@ -288,15 +296,89 @@ export default {
       this.confirm=false
     },
     ok(){
-
+      let orderType = 0
+      switch(this.currentTab){
+        case "market":
+          orderType = 0
+          break
+        case "limit":
+          orderType = 1
+          break
+        case "stop":
+          orderType = 2
+          break
+        case "cancel":
+          orderType = 4
+      }
+      this.$axios({
+        method:'post',
+        url:'http://localhost:8080/sendOrder',
+        data:{
+          traderId:this.$store.state.user.id,
+          orderType: orderType,
+          price:this.price,
+          qty:this.qty,
+          orderSide:this.side=="buy"?0:1,
+          brokerId:this.$store.state.book.brokerId,
+          instrumentId:this.$store.state.book.id,
+          bookId: "B"+this.$store.state.book.brokerId+"I"+this.$store.state.book.id
+        },
+        headers: {
+          'Content-Type': 'application/json;'
+        }
+      }).catch((error)=>{
+        console.log(error)
+      })
     },
     cancel(){
+      this.side="buy"
+      this.qty=0
+      this.price=0
+      this.orderId=""
+      this.confirm=false
+    },
+    initWebSocket() {
+      const wsuri = "ws://localhost:8080/websocket/"+"B"+this.$store.state.book.brokerId+"I"+this.$store.state.book.id;
+      this.$store.state.webSock = new WebSocket(wsuri);
+      this.$store.state.webSock.onopen = this.webSocketOnOpen;
+      this.$store.state.webSock.onerror = this.webSocketOnError;
+      this.$store.state.webSock.onmessage = this.webSocketOnMessage;
+      this.$store.state.webSock.onclose = this.webSocketOnClose;
+    },
 
+    webSocketOnOpen() {
+      console.log("连接成功");
+    },
+
+    webSocketOnError() {
+      console.log("连接发生错误");
+    },
+
+    webSocketOnMessage(e) {
+      console.log(e.data)
+      const temp = JSON.parse(""+e.data)
+      this.orderBook = temp
+      this.buys = temp.buysFive
+      this.sells = temp.sellsFive
+      this.orderBookId = temp.orderbookId
+      this.$store.state.buys = temp.buysFive
+      this.$store.state.sells = temp.sellsFive
+    },
+
+    webSocketSend(agentData) {
+      this.$store.state.webSock.send(agentData);
+    },
+
+    webSocketOnClose() {
+      console.log("连接关闭");
     }
   },
   computed:{
     sellList:function(){
       var sellList = []
+      if(this.$store.state.sells==null){
+        return sellList
+      }
       for(var i=0; i<this.$store.state.sells.length && i!=5;i++){
         sellList.push(this.$store.state.sells[i])
       }
@@ -304,6 +386,9 @@ export default {
     },
     buyList:function(){
       var buyList = []
+      if(this.$store.state.buys==null){
+        return buyList
+      }
       for(var i=0; i<this.$store.state.buys.length && i!=5;i++){
         buyList.push(this.$store.state.buys[i])
       }
