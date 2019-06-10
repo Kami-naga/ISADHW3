@@ -3,13 +3,15 @@ export default{
   user:{
     id:"",
     name:"未登录",
-    avatar:"https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1560095880&di=6c3c14f3ec86fa255b75e6ee0546e7f3&src=http://hbimg.b0.upaiyun.com/7842c3e9b5c38401e94851097c0e29f0b48c5f884d66-x9BbFI_fw658",
+    avatar:"https://cbu01.alicdn.com/img/ibank/2012/008/444/662444800_995212887.jpg",
     role:"trader"
   },
   book:{},
   broker:{},
   product:{},
-  instruments:{},
+  trader:{
+    id: 1
+  },
   products:[
     {
       id:0,

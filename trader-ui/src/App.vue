@@ -134,8 +134,13 @@ export default {
       url:this.$store.state.port+"/api/product/all"
     }).then((response)=>{
       console.log(response)
-      this.$store.state.products = response.data
-      this.$store.state.product = this.$store.state.products[0]
+      let temp = []
+      response.data.forEach((value)=>{
+        let cell = {id: value.productId, name: value.name, ename:value.name}
+        temp.push(cell)
+      })
+      this.$store.state.products = temp
+      this.$store.state.product = temp[0]
       // this.$store.state.brokers = response.data.brokers
       // this.$store.state.booksData = response.data.booksData
 
@@ -145,7 +150,7 @@ export default {
     })
     this.$axios({
       method:'post',
-      url:this.$store.state.port+"/api/instrument/byProduct",
+      url:this.$store.state.port+"/api/broker/byProduct",
       data:{
         productId : 1,
       },
@@ -158,13 +163,13 @@ export default {
 　　　　return str.join("&");
 　　　}
     }).then((response)=>{
-      console.log(response)
-      this.$store.state.brokers = response.data
-      this.$store.state.broker = this.$store.state.brokers[0]
-      // this.$store.state.brokers = response.data.brokers
-      // this.$store.state.booksData = response.data.booksData
-
-      // this.$store.state.broker = this.$store.state.brokers[0]
+      let temp = [];
+      response.data.forEach((value)=>{
+        let cell = {id: value.brokerId, name: value.name}
+        temp.push(cell)
+      })
+      this.$store.state.brokers = temp
+      this.$store.state.broker = temp[0]
     }).catch((error)=>{
       console.log(error)
     })
@@ -184,13 +189,13 @@ export default {
 　　　　return str.join("&");
 　　　}
     }).then((response)=>{
-      console.log(response)
-      this.$store.state.instruments = response.data
-      this.$store.state.broker = this.$store.state.brokers[0]
-      // this.$store.state.brokers = response.data.brokers
-      // this.$store.state.booksData = response.data.booksData
-
-      // this.$store.state.broker = this.$store.state.brokers[0]
+      let temp = [];
+      response.data.forEach((value)=>{
+        let cell = {id: value.instrumentId, bookName: value.product.name+value.period, brokerId: value.broker.brokerId}
+        temp.push(cell)
+      })
+      this.$store.state.booksData = temp;
+      console.log(temp)
     }).catch((error)=>{
       console.log(error)
     })

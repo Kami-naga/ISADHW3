@@ -28,7 +28,7 @@
             {{node.price}}
           </Col>
           <Col span="6" class="bookCell sellCell">
-            {{node.vol}}
+            {{node.volumn}}
           </Col>
           <Col span="3" class="bookCell sellCell">
             {{sellList.length-index}}
@@ -39,7 +39,7 @@
             {{1+index}}
           </Col>
           <Col span="6" class="bookCell buyCell">
-            {{node.vol}}
+            {{node.volumn}}
           </Col>
           <Col span="6" class="bookCell buyPrice" v-bind:class="{ 'cursorCell': 1+index===1}">
             {{node.price}}
@@ -268,6 +268,16 @@ export default {
       confirm:false,
     }
   },
+  created() {
+    this.initWebSocket()
+  },
+  destroyed: function() {
+    this.webSocketOnClose()
+  },
+  mounted() {
+    this.brokerId = this.$store.state.book.brokerId
+    this.instrumentId = this.$store.state.book.id
+  },
   methods:{
     changeSide(){
       if(this.side=="buy"){
@@ -286,115 +296,39 @@ export default {
       this.confirm=false
     },
     ok(){
+      let orderType = 0
       switch(this.currentTab){
         case "market":
-          this.$axios({
-            method:'post',
-            url:this.$store.state.port+"/market",
-            data:{
-              bookId:this.$store.state.book.id,
-              brokerId:this.$store.state.broker.id,
-              traderId:this.$store.state.user.id,
-              qty:this.qty,
-              side:this.side,
-            },
-            transformRequest:function(obj) {
-        　　　var str = [];
-        　　　for ( var p in obj) {
-        　　　　str.push(encodeURIComponent(p) + "="
-        　　　　+ encodeURIComponent(obj[p]));
-        　　　}
-        　　　return str.join("&");
-        　　}
-          }).then((response)=>{
-            this.$store.state.sells = response.data.sells
-            this.$store.state.buys = response.data.buys
-          }).catch((error)=>{
-            console.log(error)
-          })
+          orderType = 0
           break
         case "limit":
-          this.$axios({
-            method:'post',
-            url:this.$store.state.port+"/limit",
-            data:{
-              bookId:this.$store.state.book.id,
-              brokerId:this.$store.state.broker.id,
-              traderId:this.$store.state.user.id,
-              price:this.price,
-              qty:this.qty,
-              side:this.side,
-            },
-            transformRequest:function(obj) {
-        　　　var str = [];
-        　　　for ( var p in obj) {
-        　　　　str.push(encodeURIComponent(p) + "="
-        　　　　+ encodeURIComponent(obj[p]));
-        　　　}
-        　　　return str.join("&");
-        　　}
-          }).then((response)=>{
-            this.$store.state.sells = response.data.sells
-            this.$store.state.buys = response.data.buys
-          }).catch((error)=>{
-            console.log(error)
-          })
+          orderType = 1
           break
         case "stop":
-          this.$axios({
-            method:'post',
-            url:this.$store.state.port+"/stop",
-            data:{
-              bookId:this.$store.state.book.id,
-              brokerId:this.$store.state.broker.id,
-              traderId:this.$store.state.user.id,
-              stopPrice:this.price,
-              qty:this.qty,
-              side:this.side,
-            },
-            transformRequest:function(obj) {
-        　　　var str = [];
-        　　　for ( var p in obj) {
-        　　　　str.push(encodeURIComponent(p) + "="
-        　　　　+ encodeURIComponent(obj[p]));
-        　　　}
-        　　　return str.join("&");
-        　　}
-          }).then((response)=>{
-            this.$store.state.sells = response.data.sells
-            this.$store.state.buys = response.data.buys
-
-          }).catch((error)=>{
-            console.log(error)
-          })
+          orderType = 2
           break
         case "cancel":
-          this.$axios({
-            method:'post',
-            url:this.$store.state.port+"/cancel",
-            data:{
-              bookId:this.$store.state.book.id,
-              brokerId:this.$store.state.broker.id,
-              traderId:this.$store.state.user.id,
-              orderId:this.orderId
-            },
-            transformRequest:function(obj) {
-        　　　var str = [];
-        　　　for ( var p in obj) {
-        　　　　str.push(encodeURIComponent(p) + "="
-        　　　　+ encodeURIComponent(obj[p]));
-        　　　}
-        　　　return str.join("&");
-        　　}
-          }).then((response)=>{
-            this.$store.state.sells = response.data.sells
-            this.$store.state.buys = response.data.buys
-
-          }).catch((error)=>{
-            console.log(error)
-          })
-          break
+          orderType = 4
       }
+      this.$axios({
+        method:'post',
+        url:'http://localhost:8080/sendOrder',
+        data:{
+          traderId:this.$store.state.trader.id,
+          orderType: orderType,
+          price:this.price,
+          qty:this.qty,
+          orderSide:this.side=="buy"?0:1,
+          brokerId:this.$store.state.book.brokerId,
+          instrumentId:this.$store.state.book.id,
+          bookId: "B"+this.$store.state.book.brokerId+"I"+this.$store.state.book.id
+        },
+        headers: {
+          'Content-Type': 'application/json;'
+        }
+      }).catch((error)=>{
+        console.log(error)
+      })
     },
     cancel(){
       this.side="buy"
@@ -402,6 +336,41 @@ export default {
       this.price=0
       this.orderId=""
       this.confirm=false
+    },
+    initWebSocket() {
+      const wsuri = "ws://localhost:8080/websocket/"+"B"+this.$store.state.book.brokerId+"I"+this.$store.state.book.id;
+      this.webSock = new WebSocket(wsuri);
+      this.webSock.onopen = this.webSocketOnOpen;
+      this.webSock.onerror = this.webSocketOnError;
+      this.webSock.onmessage = this.webSocketOnMessage;
+      this.webSock.onclose = this.webSocketOnClose;
+    },
+
+    webSocketOnOpen() {
+      console.log("连接成功");
+    },
+
+    webSocketOnError() {
+      console.log("连接发生错误");
+    },
+
+    webSocketOnMessage(e) {
+      console.log(e.data)
+      const temp = JSON.parse(""+e.data)
+      this.orderBook = temp
+      this.buys = temp.buysFive
+      this.sells = temp.sellsFive
+      this.orderBookId = temp.orderbookId
+      this.$store.state.buys = temp.buysFive
+      this.$store.state.sells = temp.sellsFive
+    },
+
+    webSocketSend(agentData) {
+      this.webSock.send(agentData);
+    },
+
+    webSocketOnClose() {
+      console.log("连接关闭");
     }
   },
   computed:{

@@ -1,5 +1,6 @@
 package com.eis.trader.rabbitmq;
 
+import com.alibaba.fastjson.JSONObject;
 import com.eis.trader.controller.ProductController;
 import com.eis.trader.domain.Instrument;
 import com.eis.trader.service.ProductService;
@@ -34,7 +35,7 @@ public class Receiver {
         OrderbookVO orderbookVO = ProtostuffUtils.deserialize(data, OrderbookVO.class);
         log.info(orderbookVO.toString());
         redisConnection.set((orderbookVO.getOrderbookId()+"T").getBytes(), SerializeUtil.serialize(orderbookVO));
-        WebSocketServer.sendInfo(orderbookVO.toString(), orderbookVO.getOrderbookId());
+        WebSocketServer.sendInfo(JSONObject.toJSONString(orderbookVO), orderbookVO.getOrderbookId());
     }
 
     @RabbitListener(queues = "instrument")

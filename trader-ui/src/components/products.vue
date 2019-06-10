@@ -16,8 +16,8 @@
           <Select style="width:200px" :placeholder="this.$store.state.broker.name" @on-change="changeBroker" filterable>
               <Option v-for="item in this.$store.state.brokers" :value="item.id" :key="item.id">{{ item.name }}</Option>
           </Select>
-          <Select  v-if="orderbooksPage==false" style="width:200px;margin-left:50px" :placeholder="this.$store.state.instruments.period" @on-change="changeBook" filterable>
-              <Option v-for="item in this.$store.state.instruments" :value="item.id" :key="item.id">{{ item.bookName }}</Option>
+          <Select  v-if="orderbooksPage==false" style="width:200px;margin-left:50px" :placeholder="this.$store.state.book.bookName" @on-change="changeBook" filterable>
+              <Option v-for="item in this.$store.state.booksData" :value="item.id" :key="item.id">{{ item.bookName }}</Option>
           </Select>
         </Header>
         <Content>
@@ -33,7 +33,6 @@ export default {
   name: 'products',
   data () {
     return {
-      productId: 1,
     }
   },
   methods:{
@@ -43,10 +42,9 @@ export default {
           this.$store.state.broker = this.$store.state.brokers[i]
           this.$axios({
             method:'post',
-            url:this.$store.state.port+"/api/instrument/byProductAndBroker",
+            url:this.$store.state.port+"/changeBroker",
             data:{
               brokerId : e,
-              productId: this.productId
             },
             transformRequest:function(obj) {
         　　　var str = [];
@@ -58,8 +56,7 @@ export default {
         　　}
           }).then((response)=>{
             console.log(response)
-            this.$store.state.instruments = response.data
-            // this.$store.state.booksData = response.data.booksData
+            this.$store.state.booksData = response.data.booksData
             if(this.$route.path.slice(1).split("/")[1]==='orderbook'){
               this.$router.push("/products/orderbooks")
             }
@@ -100,7 +97,6 @@ export default {
       }
     },
     productSelect(productId){
-      this.productId = productId;
       for (var i=0;i<this.$store.state.products.length;i++){
         if(this.$store.state.products[i].id===productId){
           this.$store.state.product = this.$store.state.products[i]
@@ -119,12 +115,13 @@ export default {
       　　　　return str.join("&");
       　　　}
           }).then((response)=>{
-            console.log(response)
-            this.$store.state.brokers = response.data
-            this.$store.state.broker = this.$store.state.brokers[0]
-            if(this.$route.path.slice(1).split("/")[1]==='orderbook'){
-              this.$router.push("/products/orderbooks")
-            }
+            let temp = [];
+            response.data.forEach((value)=>{
+              let cell = {id: value.brokerId, name: value.name}
+              temp.push(cell)
+            })
+            this.$store.state.brokers = temp
+            this.$store.state.broker = temp[0]
           }).catch((error)=>{
             console.log(error)
           })
@@ -133,7 +130,7 @@ export default {
             url:this.$store.state.port+"/api/instrument/byProductAndBroker",
             data:{
               productId : productId,
-              brokerId: 1,
+              brokerId: this.$store.state.broker.id,
             },
             transformRequest:function(obj) {
       　　　　var str = [];
@@ -144,11 +141,13 @@ export default {
       　　　　return str.join("&");
       　　　}
           }).then((response)=>{
-            console.log(response)
-            this.$store.state.instruments = resposne.data
-            if(this.$route.path.slice(1).split("/")[1]==='orderbook'){
-              this.$router.push("/products/orderbooks")
-            }
+            let temp = [];
+            response.data.forEach((value)=>{
+              let cell = {id: value.instrumentId, bookName: value.product.name+value.period, brokerId: value.broker.brokerId}
+              temp.push(cell)
+            })
+            this.$store.state.booksData = temp;
+            console.log(temp)
           }).catch((error)=>{
             console.log(error)
           })
@@ -166,31 +165,7 @@ export default {
     }
   },
   mounted(){
-    this.$axios({
-      method:'post',
-      url:this.$store.state.port+"/api/instrument/byProduct",
-      data:{
-        productId : productId,
-      },
-      transformRequest:function(obj) {
-　　　　var str = [];
-　　　　for ( var p in obj) {
-　　　　　str.push(encodeURIComponent(p) + "="
-　　　　　+ encodeURIComponent(obj[p]));
-　　　　}
-　　　　return str.join("&");
-　　　}
-    }).then((response)=>{
-      console.log(response)
-      this.$store.state.products = response.data
-      this.$store.state.product = this.$store.state.products[0]
-      // this.$store.state.brokers = response.data.brokers
-      // this.$store.state.booksData = response.data.booksData
 
-      // this.$store.state.broker = this.$store.state.brokers[0]
-    }).catch((error)=>{
-      console.log(error)
-    })
   }
 }
 </script>

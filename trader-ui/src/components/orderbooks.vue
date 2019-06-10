@@ -63,9 +63,10 @@ export default {
                         this.$store.state.book = this.$store.state.booksData[i]
                         this.$axios({
                           method:'post',
-                          url:this.$store.state.port+"/changeBook",
+                          url:this.$store.state.port+"/showDetail",
                           data:{
-                            bookId : bookId,
+                            brokerId: this.$store.state.book.brokerId,
+                            instrumentId : bookId,
                           },
                           transformRequest:function(obj) {
                       　　　var str = [];
@@ -77,8 +78,8 @@ export default {
                       　　}
                         }).then((response)=>{
                           console.log(response)
-                          this.$store.state.sells = response.data.sells
-                          this.$store.state.buys = response.data.buys
+                          this.$store.state.sells = response.data.sellsFive
+                          this.$store.state.buys = response.data.buysFive
                           this.$router.push({ path: '/products/orderbook'})
                         }).catch((error)=>{
                           console.log(error)
