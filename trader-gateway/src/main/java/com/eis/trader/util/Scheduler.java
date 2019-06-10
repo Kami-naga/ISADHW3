@@ -34,7 +34,7 @@ public class Scheduler {
         System.out.println(dateFormat.format((new Date())));
     }
 
-    @Scheduled(fixedRate = 20000)
+    @Scheduled(fixedRate = 2000)
     public void orderMock() {
         Random rand =new Random();
         OrderDTO orderDTO = new OrderDTO();
@@ -44,8 +44,8 @@ public class Scheduler {
         orderDTO.setPrice(rand.nextInt(500)+500);
         orderDTO.setQty(rand.nextInt(500)+500);
         orderDTO.setInstrumentId(1L);
-        orderDTO.setTraderId(1L);
-        orderDTO.setBrokerId(1L);
+        orderDTO.setTraderId(Long.parseLong(String.valueOf(1+rand.nextInt(6))));
+        orderDTO.setBrokerId(Long.parseLong(String.valueOf(1+rand.nextInt(9))));
         orderDTO.setOrderSide(OrderSide.values()[rand.nextInt(2)]);
         orderDTO.setOrderType(OrderType.LIMITORDER);
         log.info(orderDTO.toString());
