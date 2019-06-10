@@ -16,8 +16,8 @@
           <Select style="width:200px" :placeholder="this.$store.state.broker.name" @on-change="changeBroker" filterable>
               <Option v-for="item in this.$store.state.brokers" :value="item.id" :key="item.id">{{ item.name }}</Option>
           </Select>
-          <Select  v-if="orderbooksPage==false" style="width:200px;margin-left:50px" :placeholder="this.$store.state.book.bookName" @on-change="changeBook" filterable>
-              <Option v-for="item in this.$store.state.booksData" :value="item.id" :key="item.id">{{ item.bookName }}</Option>
+          <Select  v-if="orderbooksPage==false" style="width:200px;margin-left:50px" :placeholder="this.$store.state.instruments.period" @on-change="changeBook" filterable>
+              <Option v-for="item in this.$store.state.instruments" :value="item.id" :key="item.id">{{ item.bookName }}</Option>
           </Select>
         </Header>
         <Content>
@@ -33,6 +33,7 @@ export default {
   name: 'products',
   data () {
     return {
+      productId: 1,
     }
   },
   methods:{
@@ -42,9 +43,10 @@ export default {
           this.$store.state.broker = this.$store.state.brokers[i]
           this.$axios({
             method:'post',
-            url:this.$store.state.port+"/changeBroker",
+            url:this.$store.state.port+"/api/instrument/byProductAndBroker",
             data:{
               brokerId : e,
+              productId: this.productId
             },
             transformRequest:function(obj) {
         　　　var str = [];
@@ -56,7 +58,8 @@ export default {
         　　}
           }).then((response)=>{
             console.log(response)
-            this.$store.state.booksData = response.data.booksData
+            this.$store.state.instruments = response.data
+            // this.$store.state.booksData = response.data.booksData
             if(this.$route.path.slice(1).split("/")[1]==='orderbook'){
               this.$router.push("/products/orderbooks")
             }
@@ -97,12 +100,13 @@ export default {
       }
     },
     productSelect(productId){
+      this.productId = productId;
       for (var i=0;i<this.$store.state.products.length;i++){
         if(this.$store.state.products[i].id===productId){
           this.$store.state.product = this.$store.state.products[i]
           this.$axios({
             method:'post',
-            url:this.$store.state.port+"/changeProduct",
+            url:this.$store.state.port+"/api/broker/byProduct",
             data:{
               productId : productId,
             },
@@ -116,9 +120,32 @@ export default {
       　　　}
           }).then((response)=>{
             console.log(response)
-            this.$store.state.brokers = response.data.brokers
-            this.$store.state.booksData = response.data.booksData
+            this.$store.state.brokers = response.data
             this.$store.state.broker = this.$store.state.brokers[0]
+            if(this.$route.path.slice(1).split("/")[1]==='orderbook'){
+              this.$router.push("/products/orderbooks")
+            }
+          }).catch((error)=>{
+            console.log(error)
+          })
+          this.$axios({
+            method:'post',
+            url:this.$store.state.port+"/api/instrument/byProductAndBroker",
+            data:{
+              productId : productId,
+              brokerId: 1,
+            },
+            transformRequest:function(obj) {
+      　　　　var str = [];
+      　　　　for ( var p in obj) {
+      　　　　　str.push(encodeURIComponent(p) + "="
+      　　　　　+ encodeURIComponent(obj[p]));
+      　　　　}
+      　　　　return str.join("&");
+      　　　}
+          }).then((response)=>{
+            console.log(response)
+            this.$store.state.instruments = resposne.data
             if(this.$route.path.slice(1).split("/")[1]==='orderbook'){
               this.$router.push("/products/orderbooks")
             }
@@ -139,7 +166,31 @@ export default {
     }
   },
   mounted(){
+    this.$axios({
+      method:'post',
+      url:this.$store.state.port+"/api/instrument/byProduct",
+      data:{
+        productId : productId,
+      },
+      transformRequest:function(obj) {
+　　　　var str = [];
+　　　　for ( var p in obj) {
+　　　　　str.push(encodeURIComponent(p) + "="
+　　　　　+ encodeURIComponent(obj[p]));
+　　　　}
+　　　　return str.join("&");
+　　　}
+    }).then((response)=>{
+      console.log(response)
+      this.$store.state.products = response.data
+      this.$store.state.product = this.$store.state.products[0]
+      // this.$store.state.brokers = response.data.brokers
+      // this.$store.state.booksData = response.data.booksData
 
+      // this.$store.state.broker = this.$store.state.brokers[0]
+    }).catch((error)=>{
+      console.log(error)
+    })
   }
 }
 </script>

@@ -131,14 +131,66 @@ export default {
   mounted(){
     this.$axios({
       method:'get',
-      url:this.$store.state.port+"/initPage"
+      url:this.$store.state.port+"/api/product/all"
     }).then((response)=>{
       console.log(response)
-      this.$store.state.products = response.data.products
-      this.$store.state.brokers = response.data.brokers
-      this.$store.state.booksData = response.data.booksData
+      this.$store.state.products = response.data
       this.$store.state.product = this.$store.state.products[0]
+      // this.$store.state.brokers = response.data.brokers
+      // this.$store.state.booksData = response.data.booksData
+
+      // this.$store.state.broker = this.$store.state.brokers[0]
+    }).catch((error)=>{
+      console.log(error)
+    })
+    this.$axios({
+      method:'post',
+      url:this.$store.state.port+"/api/instrument/byProduct",
+      data:{
+        productId : 1,
+      },
+      transformRequest:function(obj) {
+　　　　var str = [];
+　　　　for ( var p in obj) {
+　　　　　str.push(encodeURIComponent(p) + "="
+　　　　　+ encodeURIComponent(obj[p]));
+　　　　}
+　　　　return str.join("&");
+　　　}
+    }).then((response)=>{
+      console.log(response)
+      this.$store.state.brokers = response.data
       this.$store.state.broker = this.$store.state.brokers[0]
+      // this.$store.state.brokers = response.data.brokers
+      // this.$store.state.booksData = response.data.booksData
+
+      // this.$store.state.broker = this.$store.state.brokers[0]
+    }).catch((error)=>{
+      console.log(error)
+    })
+    this.$axios({
+      method:'post',
+      url:this.$store.state.port+"/api/instrument/byProductAndBroker",
+      data:{
+        productId : 1,
+        brokerId: 1,
+      },
+      transformRequest:function(obj) {
+　　　　var str = [];
+　　　　for ( var p in obj) {
+　　　　　str.push(encodeURIComponent(p) + "="
+　　　　　+ encodeURIComponent(obj[p]));
+　　　　}
+　　　　return str.join("&");
+　　　}
+    }).then((response)=>{
+      console.log(response)
+      this.$store.state.instruments = response.data
+      this.$store.state.broker = this.$store.state.brokers[0]
+      // this.$store.state.brokers = response.data.brokers
+      // this.$store.state.booksData = response.data.booksData
+
+      // this.$store.state.broker = this.$store.state.brokers[0]
     }).catch((error)=>{
       console.log(error)
     })

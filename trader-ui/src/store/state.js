@@ -1,5 +1,5 @@
 export default{
-  port:"http://localhost:8083",
+  port:"http://localhost:8080",
   user:{
     id:"",
     name:"未登录",
@@ -9,6 +9,7 @@ export default{
   book:{},
   broker:{},
   product:{},
+  instruments:{},
   products:[
     {
       id:0,

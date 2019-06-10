@@ -24,10 +24,15 @@ public class RabbitmqConfig {
 
     static final String queueName = "orderBook";
 
+    static final String insturmentQueueName = "instrument";
+
     @Bean
     Queue queue() {
         return new Queue(queueName);
     }
+
+    @Bean
+    Queue instrumentQueue() { return new Queue(insturmentQueueName); }
 
     @Bean
     TopicExchange exchange() {
@@ -37,6 +42,11 @@ public class RabbitmqConfig {
     @Bean
     Binding binding(Queue queue, TopicExchange topicExchange) {
         return BindingBuilder.bind(queue).to(topicExchange).with(queueName);
+    }
+
+    @Bean
+    Binding bindingInstrumentQueue(Queue queue, TopicExchange topicExchange) {
+        return BindingBuilder.bind(queue).to(topicExchange).with(insturmentQueueName);
     }
 
 //    @Bean
