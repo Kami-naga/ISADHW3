@@ -1,8 +1,8 @@
 export default{
-  //port:"http://localhost:8080",
-  //port2:"http://localhost:8083",
-  port:"202.120.40.8:30465/trader",
-  port2:"202.120.40.8:30465/broker",
+  port:"http://localhost:8080",
+  port2:"http://localhost:8083",
+  //port:"202.120.40.8:30465/trader",
+  //port2:"202.120.40.8:30465/broker",
   user:{
     id:"",
     name:"未登录",

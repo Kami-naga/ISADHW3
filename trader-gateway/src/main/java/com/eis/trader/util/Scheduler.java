@@ -1,9 +1,11 @@
 package com.eis.trader.util;
 
 import com.alibaba.fastjson.JSONObject;
+import com.eis.trader.domain.Instrument;
 import com.eis.trader.dto.OrderDTO;
 import com.eis.trader.enums.OrderSide;
 import com.eis.trader.enums.OrderType;
+import com.eis.trader.repository.InstrumentRepository;
 import com.eis.trader.service.OrderService;
 import com.eis.trader.vo.OrderNodeVO;
 import com.eis.trader.vo.OrderbookVO;
@@ -27,6 +29,9 @@ public class Scheduler {
     private OrderService orderService;
 
 
+    @Autowired
+    private InstrumentRepository instrumentRepository;
+
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     @Scheduled(fixedRate = 10000)
@@ -36,18 +41,25 @@ public class Scheduler {
 
     @Scheduled(fixedRate = 2000)
     public void orderMock() {
+        List<Instrument> instrumentList = instrumentRepository.findAll();
+        int length = instrumentList.size();
         Random rand =new Random();
         OrderDTO orderDTO = new OrderDTO();
         if (WebSocketServer.getSid().equals(""))
             return;
+        Instrument instrument = instrumentList.get(rand.nextInt(length));
         orderDTO.setBookId(WebSocketServer.getSid());
         orderDTO.setPrice(rand.nextInt(500)+500);
         orderDTO.setQty(rand.nextInt(500)+500);
-        orderDTO.setInstrumentId(1L);
+        orderDTO.setInstrumentId(instrument.getInstrumentId());
         orderDTO.setTraderId(Long.parseLong(String.valueOf(1+rand.nextInt(6))));
-        orderDTO.setBrokerId(Long.parseLong(String.valueOf(1+rand.nextInt(9))));
+        orderDTO.setBrokerId(instrument.getBroker().getBrokerId());
         orderDTO.setOrderSide(OrderSide.values()[rand.nextInt(2)]);
         orderDTO.setOrderType(OrderType.LIMITORDER);
+        SimpleDateFormat sdf = new SimpleDateFormat();// 格式化时间
+        sdf.applyPattern("yyyy-MM-dd HH:mm:ss a");// a为am/pm的标记
+        Date date = new Date();// 获取当前时间
+        orderDTO.setTimeSign(sdf.format(date));
         log.info(orderDTO.toString());
         orderService.transferOrder(ProtostuffUtils.serialize(orderDTO));
     }

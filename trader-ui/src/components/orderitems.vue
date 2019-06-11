@@ -49,7 +49,7 @@
         {{orderitem.qty}}
       </Col>
       <Col span="3" class="contentCell" style="padding:0px;line-height:40px;text-align:center">
-        <div @click="cancelOrder(orderitem.orderId,orderitem.broker,orderitem.qty)" style="width:100%;height:100%;cursor:pointer">
+        <div @click="cancelOrder(index,orderitem.orderId,orderitem.broker,orderitem.qty)" style="width:100%;height:100%;cursor:pointer">
           取消订单
         </div>
       </Col>
@@ -103,7 +103,7 @@
         {{orderitem.qty}}
       </Col>
       <Col span="3" class="contentCell" style="padding:0px;line-height:40px;text-align:center">
-        <div @click="cancelOrder(orderitem.orderId,orderitem.broker,orderitem.qty)" style="width:100%;height:100%;cursor:pointer">
+        <div @click="cancelOrder(index,orderitem.orderId,orderitem.broker,orderitem.qty)" style="width:100%;height:100%;cursor:pointer">
           取消订单
         </div>
       </Col>
@@ -149,11 +149,13 @@ export default {
       toCancel:false,
       orderId:[],
       broker:"",
-      qty:0
+      qty:0,
+      orderIndex:-1,
     }
   },
   methods:{
-    cancelOrder(orderId,broker,qty){
+    cancelOrder(index,orderId,broker,qty){
+      this.orderIndex = index
       this.orderId = orderId
       this.broker = broker
       this.qty = qty
@@ -164,95 +166,30 @@ export default {
       this.$Notice.success({
         title: "取消订单成功，剩余" + parseInt(this.qty*(1- 0.5*Math.random())) +"单位未交易"
       });
+      this.limitOrders.splice(this.orderIndex,1)
       this.cancelCancel()
     },
     cancelCancel(){
+      this.orderIndex = -1
       this.orderId = []
       this.broker = ""
       this.toCancel = false,
       this.qty = 0
+    },
+    compare(attr) {
+      return function(a,b){
+        var val1 = a[attr];
+        var val2 = b[attr];
+        return val1 - val2;
+      }
     }
   },
   mounted() {
-    var limitOrders = []
-    var stopOrders = []
-    for(var i=0;i<this.$store.state.orderitems.length;i++){
-      var item = this.$store.state.orderitems[i]
-      var nodeId = item.node_id
-      if(nodeId.charAt(nodeId.length-1)==='S'){
-        //stop
-        var sign = nodeId+item.timeSign
-        var flag = true
-        for(var j=0;j<stopOrders.length;j++){
-          if(sign===stopOrders[j].sign){
-            var tmp = stopOrders[j]
-            tmp.qty = tmp.qty + item.vol
-            if(item.orderId<tmp.orderId[0]){
-              tmp.orderId.unshift(item.orderId)
-            }
-            else{
-              tmp.orderId.push(item.orderId)
-            }
-            stopOrders[j] = tmp
-            flag = false
-            break
-          }
-        }
-        if(flag){
-          var tmp = nodeId.split('P')
-          var str = tmp[1]
-          str = str.substr(0,str.length-1)
-          stopOrders.push({
-            orderId:[item.orderId],
-            broker:item.broker,
-            product:item.product,
-            qty:item.vol,
-            periodT:item.periodT,
-            price:str,
-            sign:sign
-          })
-        }
-      }
-      else{
-        //limit
-        var sign = nodeId+item.timeSign
-        var flag = true
-        for(var j=0;j<limitOrders.length;j++){
-          if(sign===limitOrders[j].sign){
-            var tmp = limitOrders[j]
-            tmp.qty = tmp.qty + item.vol
-            if(item.orderId<tmp.orderId[0]){
-              tmp.orderId.unshift(item.orderId)
-            }
-            else{
-              tmp.orderId.push(item.orderId)
-            }
-            limitOrders[j] = tmp
-            flag=false
-            break
-          }
-        }
-        if(flag){
-          var tmp = nodeId.split('P')
-          var str = tmp[1]
-          limitOrders.push({
-            orderId:[item.orderId],
-            broker:item.broker,
-            product:item.product,
-            qty:item.vol,
-            periodT:item.periodT,
-            price:str,
-            sign:sign
-          })
-        }
-      }
-    }
-    this.limitOrders = limitOrders
-    this.stopOrders = stopOrders
+    
 
-    /*this.$axios({
-      method: "get",
-      url: this.$store.state.port2 + "/api/orderitems",
+    this.$axios({
+      method: "post",
+      url: this.$store.state.port2 + "/orderitems",
       data:{
         traderId:this.$store.state.user.id
       },
@@ -267,11 +204,88 @@ export default {
     })
       .then(response => {
         this.$store.state.orderitems = response.data
-        console.log(response.data)
+        var limitOrders = []
+        var stopOrders = []
+        for(var i=0;i<this.$store.state.orderitems.length;i++){
+          var item = this.$store.state.orderitems[i]
+          if(item.timeSign==null){
+            item.timeSign = "xx"
+          }
+          var nodeId = item.node_id
+          if(nodeId.charAt(nodeId.length-1)==='S'){
+            //stop
+            var sign = nodeId+item.timeSign
+            var flag = true
+            for(var j=0;j<stopOrders.length;j++){
+              if(sign===stopOrders[j].sign){
+                var tmp = stopOrders[j]
+                tmp.qty = tmp.qty + item.vol
+                if(item.orderId<tmp.orderId[0]){
+                  tmp.orderId.unshift(item.orderId)
+                }
+                else{
+                  tmp.orderId.push(item.orderId)
+                }
+                stopOrders[j] = tmp
+                flag = false
+                break
+              }
+            }
+            if(flag){
+              var tmp = nodeId.split('P')
+              var str = tmp[1]
+              str = str.substr(0,str.length-1)
+              stopOrders.push({
+                orderId:[item.orderId],
+                broker:item.broker,
+                product:item.product,
+                qty:item.vol,
+                periodT:item.periodT,
+                price:str,
+                sign:sign
+              })
+            }
+          }
+          else{
+            //limit
+            var sign = nodeId+item.timeSign
+            var flag = true
+            for(var j=0;j<limitOrders.length;j++){
+              if(sign===limitOrders[j].sign){
+                var tmp = limitOrders[j]
+                tmp.qty = tmp.qty + item.vol
+                if(item.orderId<tmp.orderId[0]){
+                  tmp.orderId.unshift(item.orderId)
+                }
+                else{
+                  tmp.orderId.push(item.orderId)
+                }
+                limitOrders[j] = tmp
+                flag=false
+                break
+              }
+            }
+            if(flag){
+              var tmp = nodeId.split('P')
+              var str = tmp[1]
+              limitOrders.push({
+                orderId:[item.orderId],
+                broker:item.broker,
+                product:item.product,
+                qty:item.vol,
+                periodT:item.periodT,
+                price:str,
+                sign:sign
+              })
+            }
+          }
+        }
+        this.limitOrders = limitOrders.sort(this.compare("orderId"))
+        this.stopOrders = stopOrders
       })
       .catch(error => {
         console.log(error);
-      });*/
+      });
   },
   computed:{
   }
