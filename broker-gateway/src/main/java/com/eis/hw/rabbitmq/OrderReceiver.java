@@ -61,6 +61,7 @@ public class OrderReceiver {
         OrderSide side = orderDTO.getOrderSide();
         int price = orderDTO.getPrice();
         int qty = orderDTO.getQty();
+        String timeSign = orderDTO.getTimeSign();
         Long trader_id = orderDTO.getTraderId();
         Long broker_id = orderDTO.getBrokerId();
         if (orderType == OrderType.MARKETORDER) {
@@ -80,6 +81,7 @@ public class OrderReceiver {
             orderitem.setBroker(brokerRepository.findById(broker_id).get());
             orderitem.setTrader(traderRepository.findById(trader_id).get());
             orderitem.setVol(rest);
+            orderitem.setTimeSign(timeSign);
             orderitem = orderitemRepository.save(orderitem);
             rOrderbookService.insertOrderitem(bookId, side, price, rest, orderitem);
             orderitemRepository.save(orderitem);
@@ -94,6 +96,7 @@ public class OrderReceiver {
             orderitem.setBroker(brokerRepository.findById(broker_id).get());
             orderitem.setTrader(traderRepository.findById(trader_id).get());
             orderitem.setVol(qty);
+            orderitem.setTimeSign(timeSign);
             orderitem = orderitemRepository.save(orderitem);
             rOrderbookService.insertStopOrderitem(bookId, side, price, qty, orderitem);
             orderitem = orderitemRepository.save(orderitem);

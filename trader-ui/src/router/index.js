@@ -5,6 +5,7 @@ import products from '@/components/products'
 import orderbooks from '@/components/orderbooks'
 import orderbook from '@/components/orderbook'
 import orderblotter from '@/components/orderblotter'
+import orderitems from '@/components/orderitems'
 
 Vue.use(Router)
 
@@ -38,6 +39,11 @@ export default new Router({
       path:'/orderblotter',
       name:'orderblotter',
       component:orderblotter
+    },
+    {
+      path:'/orderitems',
+      name:'orderitems',
+      component:orderitems
     }
   ]
 })

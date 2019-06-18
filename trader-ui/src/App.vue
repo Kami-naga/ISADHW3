@@ -2,7 +2,7 @@
   <div id="app">
     <div style="height:60px;">
       <Row>
-        <Col span="12">ISAD</Col>
+        <Col span="12" style="height:60px;padding-left:60px;line-height:60px;font-size:40px;font-weight:700">I&#160;S&#160;A&#160;D</Col>
         <Col class="check-trades" span="3">
           <Button
             v-if="this.$store.state.user.role=='broker'"
@@ -10,6 +10,12 @@
             type="info"
             size="large"
           >添加期货</Button>
+          <Button
+            v-if="this.$store.state.user.role=='trader'"
+            @click="checkOrderitems"
+            type="info"
+            size="large"
+          >{{isOrderitems?"返回上一级":"查看订单"}}</Button>
         </Col>
         <Col class="check-trades" span="3">
           <Button @click="checkTrades" type="info" size="large">{{isChecked?"返回上一级":"查看所有交易"}}</Button>
@@ -117,12 +123,33 @@ export default {
         this.$router.go(-1);
         return;
       }
+      if (this.$route.path.slice(1).split("/")[0] === "orderitems") {
+        this.$router.replace("/orderblotter");
+        return;
+      }
       this.$router.push("/orderblotter");
+    },
+    checkOrderitems(){
+      if (this.$route.path.slice(1).split("/")[0] === "orderitems") {
+        this.$router.go(-1);
+        return;
+      }
+      if (this.$route.path.slice(1).split("/")[0] === "orderblotter") {
+        this.$router.replace("/orderitems");
+        return;
+      }
+      this.$router.push("/orderitems");
     }
   },
   computed: {
     isChecked() {
       if (this.$route.path.slice(1).split("/")[0] === "orderblotter") {
+        return true;
+      }
+      return false;
+    },
+    isOrderitems(){
+      if (this.$route.path.slice(1).split("/")[0] === "orderitems") {
         return true;
       }
       return false;
@@ -228,6 +255,7 @@ export default {
   height: 60px;
   display: flex;
   align-items: center;
+  padding:15px
 }
 
 .modal-row {

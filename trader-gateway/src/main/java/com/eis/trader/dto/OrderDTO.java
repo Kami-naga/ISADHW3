@@ -27,4 +27,7 @@ public class OrderDTO {
     private Integer price;
 
     private Integer qty;
+
+    private String timeSign;
+
 }

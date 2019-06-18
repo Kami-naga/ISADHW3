@@ -136,7 +136,7 @@ export default {
       url: this.$store.state.port2 + "/api/trade/all",
     })
       .then(response => {
-        this.$store.state.trades = response.data
+        this.$store.state.trades = response.data.reverse()
         console.log(response.data)
       })
       .catch(error => {

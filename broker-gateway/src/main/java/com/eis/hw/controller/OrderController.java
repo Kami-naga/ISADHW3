@@ -1,25 +1,27 @@
 package com.eis.hw.controller;
 
 import com.eis.hw.dao.BrokerRepository;
+import com.eis.hw.dao.InstrumentRepository;
 import com.eis.hw.dao.OrderitemRepository;
 import com.eis.hw.dao.TraderRepository;
 import com.eis.hw.dto.OrderDTO;
+import com.eis.hw.dto.OrderitemDTO;
 import com.eis.hw.enums.OrderSide;
+import com.eis.hw.model.entity.Instrument;
 import com.eis.hw.model.entity.Orderbook;
 import com.eis.hw.model.entity.Orderitem;
+import com.eis.hw.model.entity.Trader;
 import com.eis.hw.model.redisentity.ROrderbook;
-import com.eis.hw.model.redisentity.ROrdernode;
 import com.eis.hw.service.OrderbookService;
 import com.eis.hw.service.ROrderbookService;
 import com.eis.hw.util.ProtostuffUtils;
-import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class OrderController {
@@ -33,16 +35,46 @@ public class OrderController {
 
     private final TraderRepository traderRepository;
 
+    private final InstrumentRepository instrumentRepository;
+
     @Autowired
     private RedisConnection redisConnection;
 
     @Autowired
-    public OrderController(ROrderbookService rOrderbookService, OrderbookService orderbookService, OrderitemRepository orderitemRepository, BrokerRepository brokerRepository, TraderRepository traderRepository) {
+    public OrderController(ROrderbookService rOrderbookService, OrderbookService orderbookService, OrderitemRepository orderitemRepository, BrokerRepository brokerRepository, TraderRepository traderRepository, InstrumentRepository instrumentRepository) {
         this.rOrderbookService = rOrderbookService;
         this.orderbookService = orderbookService;
         this.orderitemRepository = orderitemRepository;
         this.brokerRepository = brokerRepository;
         this.traderRepository = traderRepository;
+        this.instrumentRepository = instrumentRepository;
+    }
+
+    @PostMapping(value = "orderitems")
+    @ResponseBody
+    public List<OrderitemDTO> getOrderitems(Long traderId){
+        Trader trader = traderRepository.findById(traderId).get();
+        List<Orderitem> orderitems = orderitemRepository.findByTrader(trader);
+        List<OrderitemDTO> orderitemDTOS = new ArrayList<>();
+        for(int i=0;i<orderitems.size();i++){
+            OrderitemDTO orderitemDTO = new OrderitemDTO();
+            Orderitem order = orderitems.get(i);
+            orderitemDTO.setBroker(order.getBroker().getName());
+            orderitemDTO.setNode_id(order.getNodeId());
+            orderitemDTO.setOrderId(order.getOrderId());
+            orderitemDTO.setVol(order.getVol());
+            orderitemDTO.setTimeSign(order.getTimeSign());
+            String nodeId = order.getNodeId();
+            int Iindex = nodeId.indexOf('I');
+            int Pindex = nodeId.indexOf('P');
+            //Integer brokerId = Integer.valueOf(nodeId.substring(1,Iindex));
+            Long instrumentId = Long.valueOf(nodeId.substring(Iindex+1,Pindex));
+            Instrument instrument = instrumentRepository.findById(instrumentId).get();
+            orderitemDTO.setPeriodT(instrument.getPeriodT());
+            orderitemDTO.setProduct(instrument.getProduct().getName());
+            orderitemDTOS.add(orderitemDTO);
+        }
+        return orderitemDTOS;
     }
 
     @PostMapping(value="showDetail")

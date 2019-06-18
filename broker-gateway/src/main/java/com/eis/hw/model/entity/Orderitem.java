@@ -25,6 +25,8 @@ public class Orderitem {
 
     private String nodeId;
 
+    private String timeSign;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

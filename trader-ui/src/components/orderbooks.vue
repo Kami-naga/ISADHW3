@@ -123,6 +123,7 @@ export default {
 
                         }).catch((error)=>{
                           console.log(error)
+                          this.$router.push({ path: '/products/orderbook'})
                         })
                         return
                       }

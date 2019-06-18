@@ -1,18 +1,93 @@
 export default{
   port:"http://localhost:8080",
   port2:"http://localhost:8083",
+  //port:"202.120.40.8:30465/trader",
+  //port2:"202.120.40.8:30465/broker",
   user:{
     id:"",
     name:"未登录",
     avatar:"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1560169046585&di=62529166adf2076c86f92ab4a785ed34&imgtype=0&src=http%3A%2F%2Fpic.51yuansu.com%2Fpic3%2Fcover%2F00%2F94%2F68%2F58dcd704b0803_610.jpg",
-    role:""
+    role:"trader"
   },
   book:{},
   broker:{},
   product:{},
-  // trader:{
-  //   id: 1
-  // },
+  orderitems:[
+    {
+      orderId:4,
+      broker:"Martin",
+      product:"Cu",
+      vol:400,
+      periodT:"1109",
+      node_id:"B1I1P1600",
+      timeSign:"2019/6/11 上午1:30:38"
+    },
+    {
+      orderId:3,
+      broker:"Martin",
+      product:"Cu",
+      vol:400,
+      periodT:"1109",
+      node_id:"B1I1P1600",
+      timeSign:"2019/6/11 上午1:30:38"
+    },
+    {
+      orderId:5,
+      broker:"Martin",
+      product:"Cu",
+      vol:300,
+      periodT:"1110",
+      node_id:"B1I1P1600",
+      timeSign:"2019/6/11 上午1:30:37"
+    },
+    {
+      orderId:6,
+      broker:"W",
+      product:"Ag",
+      vol:200,
+      periodT:"1109",
+      node_id:"B1I2P1600",
+      timeSign:"2019/6/11 上午1:30:38"
+    },
+    {
+      orderId:9,
+      broker:"Martin",
+      product:"Cu",
+      vol:400,
+      periodT:"1109",
+      node_id:"B1I1P1600S",
+      timeSign:"2019/6/11 上午1:30:38"
+    },
+    {
+      orderId:8,
+      broker:"Martin",
+      product:"Cu",
+      vol:400,
+      periodT:"1109",
+      node_id:"B1I1P1600S",
+      timeSign:"2019/6/11 上午1:30:38"
+    },
+    {
+      orderId:10,
+      broker:"Martin",
+      product:"Cu",
+      vol:300,
+      periodT:"1111",
+      node_id:"B1I1P1600S",
+      timeSign:"2019/6/11 上午1:30:37"
+    },
+    {
+      orderId:11,
+      broker:"W",
+      product:"Ag",
+      vol:200,
+      periodT:"1109",
+      node_id:"B1I2P1600S",
+      timeSign:"2019/6/11 上午1:30:38"
+    },
+
+  ],
+
   products:[
     {
       id:0,
